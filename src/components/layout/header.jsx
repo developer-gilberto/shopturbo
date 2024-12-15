@@ -1,23 +1,30 @@
-import Image from "next/image";
 import Link from "next/link";
+import { Logo } from "../ui/logo";
 
 export function Header() {
     return (
-        <header className="bg-slate-900 flex justify-between items-center gap-1">
+        <header className="flex justify-between items-center gap-2 p-2 border-b-[1px] border-[--bg_4]">
+
             <Link href="/" className="flex items-center gap-1">
-                <Image
-                    src="/assets/icons/shopturbo-icons/android-chrome-192x192.png"
-                    alt="shopturbo-logo"
-                    width={64}
-                    height={64}
-                    quality={100}
-                    className="rounded-full"
-                />
-                <p className="text-primary_color text-xl font-bold">
+                <Logo width={48} height={48} />
+                <strong className="text-primary_color text-xl font-bold">
                     ShopTurbo
-                </p>
+                </strong>
                 &reg;
             </Link>
+
+            <div className="flex justify-between items-center gap-4">
+                <Link href="/signup" className="flex items-center gap-1">
+                    /signup
+                </Link>
+                <Link href="/login" className="flex items-center gap-1">
+                    /login
+                </Link>
+                <Link href="/dashboard" className="flex items-center gap-1">
+                    /dashboard
+                </Link>
+            </div>
+
         </header>
     );
 }

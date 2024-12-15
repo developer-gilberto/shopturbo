@@ -1,5 +1,8 @@
 import localFont from "next/font/local";
 import "./globals.css";
+import { Container } from "@/components/layout/container";
+import { Footer } from "@/components/layout/footer";
+import { Header } from "@/components/layout/header";
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -14,7 +17,7 @@ const geistMono = localFont({
 
 export const metadata = {
     title: "ShopTurbo",
-    description: "Seu gerenciador de loja.",
+    description: "Seu gerenciador de vendas.",
 };
 
 export default function RootLayout({ children }) {
@@ -23,7 +26,11 @@ export default function RootLayout({ children }) {
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                {children}
+                <Header />
+                <Container>
+                    {children}
+                </Container>
+                <Footer />
             </body>
         </html>
     );

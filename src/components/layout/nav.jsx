@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 export function Nav() {
+
     return (
         <nav className="border border-[--bg_4] min-w-fit p-2">
             <ul className="flex flex-col gap-4 p-2">
@@ -52,14 +53,16 @@ export function Nav() {
                         Impostos %
                     </Link>
                 </li>
+
                 <li className="flex rounded-md">
                     <Link
-                        href="/generate-url"
+                        href="/integrate-api/shopee"
                         className="min-w-full bg-[--bg_4] py-1 px-2 rounded-md border-[1px] border-transparent hover:bg-[--bg_5] hover:border-[--bg_3] hover:cursor-pointer"
                     >
-                        Conectar à Shopee
+                        Conectar-se à Shopee
                     </Link>
                 </li>
+
                 <li className="flex rounded-md">
                     <Link
                         href="/logout"

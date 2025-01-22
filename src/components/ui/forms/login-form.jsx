@@ -14,49 +14,44 @@ export function LoginForm() {
     const [ loading, setLoading ] = useState(false);
 
     useEffect(() => {
-        setTimeout(() => {
-            return setFeedbackMessage("");
-        }, 3000);
+        const timer = setTimeout(() => { setFeedbackMessage("") }, 3000);
+        return () => clearTimeout(timer);
     }, [ feedbackMessage ]);
 
-    async function handleSubmit(e) {
-        e.preventDefault();
-        const userData = [];
-        const formData = new FormData(document.querySelector("#login-form"));
-        formData.forEach((data) => userData.push(data));
-        setLoading(true);
+    async function handleSubmit(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+
+        const userData = {
+            email: formData.get("email"),
+            password: formData.get("password")
+        }
 
         try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_SERVER_URL}/login`,
-                {
+            setLoading(true);
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/user/login`, {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ userData }),
-                }
-            );
-        
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(userData)
+            });
+
             if (!response.ok) {
-                setLoading(false);
                 setSuccessfulRequest(false);
                 const responseData = await response.json();
-                return setFeedbackMessage(responseData.error.issues[0].message);
+                return setFeedbackMessage(responseData.message.issues[0].message);
             }
 
-            setLoading(false);
             setSuccessfulRequest(true);
-            setFeedbackMessage("Acesso autorizado!");
-            setTimeout(() => {
-                redirect("/dashboard");
-                // window.location.href = "/dashboard";
-            }, 3000);
+            setFeedbackMessage("Login bem sucedido!");
+
+            setTimeout(() => { redirect("/dashboard") }, 3000);
 
         } catch (err) {
-            setLoading(false);
             setSuccessfulRequest(false);
-            return setFeedbackMessage(`Algo deu errado!\nTente novamente mais tarde...`);
+            return setFeedbackMessage(`Erro ao fazer login!\nTente novamente mais tarde...`);
+        } finally {
+            setLoading(false);
         }
     }
 

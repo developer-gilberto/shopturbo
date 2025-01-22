@@ -1,8 +1,9 @@
 "use client";
 
-export function Button({ children, value, type, width, customStyle }) {
+export function Button({ onClick, children, value, type, width, customStyle }) {
     return (
         <button
+            onClick={onClick}
             className={`flex justify-center items-center gap-2 ${
                 width ? width : ""
             } ${

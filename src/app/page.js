@@ -6,7 +6,6 @@ export default function Home() {
     return (
         <div className="h-dvh flex justify-center items-center">
             <div className="p-8 rounded-lg flex flex-col justify-center items-center max-w-fit mx-auto">
-                <h2 className="text-2xl">Bem vindo ao</h2>
 
                 <div className="flex items-center gap-2 mb-8">
                     <Logo width={100} height={100}/>

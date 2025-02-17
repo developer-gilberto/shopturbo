@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/btn";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { FeedbackModal } from "../feedback-modal";
 import { Loading } from "../loading";
 
 export function SignupForm() {
+    const router = useRouter();
     const [ feedbackMessage, setFeedbackMessage ] = useState("");
     const [ successfulRequest, setSuccessfulRequest ] = useState(false);
     const [ loading, setLoading ] = useState(false);
@@ -29,11 +30,11 @@ export function SignupForm() {
             termsOfUse: formData.get("termsOfUse")
         }
 
-        if (!userData.name || !userData.email || !userData.password) {
-            return setFeedbackMessage("Preencha todos os campos!");
-        }
+        // if (!userData.name || !userData.email || !userData.password) {
+        //     return setFeedbackMessage("Preencha todos os campos!");
+        // }
 
-        if (!userData.termsOfUse) return setFeedbackMessage("Você precisa aceitar os termos de uso para criar uma conta!");
+        // if (!userData.termsOfUse) return setFeedbackMessage("Você precisa aceitar os termos de uso para criar uma conta!");
 
         try {
             setLoading(true);
@@ -53,7 +54,8 @@ export function SignupForm() {
             setSuccessfulRequest(true);
             setFeedbackMessage("Conta criada com sucesso!");
 
-            setTimeout(() => { redirect("/login") }, 3000);
+            // setTimeout(() => { redirect("/login") }, 3000);
+            setTimeout(() => { router.replace("/login") }, 3000);
 
         } catch (err) {
             setSuccessfulRequest(false);
@@ -81,7 +83,7 @@ export function SignupForm() {
 
             <Input type="text" name="name" placeholder="Nome completo" />
 
-            <Input type="email" name="email" placeholder="Email" />
+            <Input type="email" name="email" placeholder="Digite um e-mail válido" />
 
             <Input type="password" name="password" placeholder="Senha" />
 
@@ -104,7 +106,7 @@ export function SignupForm() {
                 className="text-primary_color hover:cursor-pointer hover:underline hover:text-secondary_color"
                 href="/terms"
             >
-                Termos de uso ShopTurbo.
+                &gt; Termos de uso ShopTurbo.
             </Link>
 
             {!loading && (

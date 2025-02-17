@@ -65,6 +65,15 @@ export function Nav() {
 
                 <li className="flex rounded-md">
                     <Link
+                        href="/support"
+                        className="min-w-full bg-[--bg_4] py-1 px-2 rounded-md border-[1px] border-transparent hover:bg-[--bg_5] hover:border-[--bg_3] hover:cursor-pointer"
+                    >
+                        Suporte
+                    </Link>
+                </li>
+
+                <li className="flex rounded-md">
+                    <Link
                         href="/logout"
                         className="min-w-full bg-[--bg_4] py-1 px-2 rounded-md border-[1px] border-transparent hover:border-red-600 hover:text-red-500 hover:cursor-pointer font-extrabold"
                     >

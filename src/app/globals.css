@@ -20,20 +20,9 @@
     --bg_5: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --main_background: #000;
-        --foreground: #ededed;
-    }
-}
-
 body, html {
     height: 100%;
     color: var(--foreground);
     background: var(--main_background);
     overflow-x: hidden; 
 }
-
-/* #logo{
-    filter: drop-shadow(2px 2px 0px rgb(216, 216, 216));
-} */

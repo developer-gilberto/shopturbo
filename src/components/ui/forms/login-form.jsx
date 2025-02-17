@@ -33,17 +33,21 @@ export function LoginForm() {
             const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/user/login`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(userData)
+                    body: JSON.stringify(userData),
+                    credentials: "include"
             });
 
             if (!response.ok) {
                 setSuccessfulRequest(false);
                 const responseData = await response.json();
-                return setFeedbackMessage(responseData.message.issues[0].message);
+                return setFeedbackMessage(responseData?.message?.issues[0]?.message) || "Erro ao tentar fazer login. Verifique se os dados estão corretos.";
             }
 
             setSuccessfulRequest(true);
-            setFeedbackMessage("Login bem sucedido!");
+            const responseData = await response.json();
+            const message = responseData.message
+            // setFeedbackMessage("Login bem sucedido!");
+            setFeedbackMessage(message);
 
             setTimeout(() => { redirect("/dashboard") }, 3000);
 
@@ -65,7 +69,7 @@ export function LoginForm() {
 
             { feedbackMessage && <FeedbackModal request={successfulRequest} message={feedbackMessage} /> }
 
-            <h2 className="text-2xl font-extrabold">Login</h2>
+            <h2 className="text-3xl font-extrabold">Login</h2>
 
             <Input type="email" name="email" placeholder="Email" />
 
@@ -83,7 +87,7 @@ export function LoginForm() {
 
             {!loading && (
                 <Button type="submit" width="w-full">
-                    Criar conta
+                    Entrar
                 </Button>
             )}
 

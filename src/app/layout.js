@@ -1,5 +1,6 @@
 import localFont from "next/font/local";
 import "./globals.css";
+import { ShopProvider } from "@/context/shopContext";
 import { Container } from "@/components/layout/container";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
@@ -26,9 +27,11 @@ export default function RootLayout({ children }) {
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                <Header />
-                <Container>{children}</Container>
-                <Footer />
+                <ShopProvider>
+                    <Header />
+                    <Container>{children}</Container>
+                    <Footer />
+                </ShopProvider>
             </body>
         </html>
     );

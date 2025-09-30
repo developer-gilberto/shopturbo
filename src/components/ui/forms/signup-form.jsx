@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/btn";
 import { Input } from "@/components/ui/input";
@@ -10,14 +10,14 @@ import { Loading } from "../loading";
 
 export function SignupForm() {
     const router = useRouter();
-    const [ feedbackMessage, setFeedbackMessage ] = useState("");
-    const [ successfulRequest, setSuccessfulRequest ] = useState(false);
-    const [ loading, setLoading ] = useState(false);
+    const [feedbackMessage, setFeedbackMessage] = useState("");
+    const [successfulRequest, setSuccessfulRequest] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => setFeedbackMessage(""), 3000);
         return () => clearTimeout(timer);
-    }, [ feedbackMessage ]);
+    }, [feedbackMessage]);
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -27,45 +27,56 @@ export function SignupForm() {
             name: formData.get("name"),
             email: formData.get("email"),
             password: formData.get("password"),
-            termsOfUse: formData.get("termsOfUse")
+            termsOfUse: formData.get("termsOfUse"),
+        };
+
+        if (!userData.name || !userData.email || !userData.password) {
+            return setFeedbackMessage("Preencha todos os campos!");
         }
 
-        // if (!userData.name || !userData.email || !userData.password) {
-        //     return setFeedbackMessage("Preencha todos os campos!");
-        // }
-
-        // if (!userData.termsOfUse) return setFeedbackMessage("Você precisa aceitar os termos de uso para criar uma conta!");
+        if (!userData.termsOfUse) {
+            return setFeedbackMessage(
+                "Você precisa aceitar os termos de uso para criar uma conta!",
+            );
+        }
 
         try {
             setLoading(true);
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/user/signup`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(userData),
-            });
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/signup`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(userData),
+                },
+            );
 
             if (!response.ok) {
                 setSuccessfulRequest(false);
-                const responseData = await response.json();
-                return setFeedbackMessage(responseData.message.issues[0].message);
+
+                return setFeedbackMessage(
+                    response.status === 400
+                        ? "Dados inválidos. Verifique os dados e tente novamente."
+                        : "Erro ao tentar criar conta!",
+                );
             }
 
             setSuccessfulRequest(true);
             setFeedbackMessage("Conta criada com sucesso!");
 
-            // setTimeout(() => { redirect("/login") }, 3000);
-            setTimeout(() => { router.replace("/login") }, 3000);
-
+            setTimeout(() => {
+                router.replace("/signin");
+            }, 3000);
         } catch (err) {
             setSuccessfulRequest(false);
-            return setFeedbackMessage(`Erro ao tentar criar conta!\nTente novamente mais tarde...`);
+            return setFeedbackMessage(
+                `Erro ao tentar criar conta!\nTente novamente mais tarde...`,
+            );
         } finally {
             setLoading(false);
         }
     }
-
-    // if (loading) return <Loading />;
 
     return (
         <form
@@ -83,7 +94,11 @@ export function SignupForm() {
 
             <Input type="text" name="name" placeholder="Nome completo" />
 
-            <Input type="email" name="email" placeholder="Digite um e-mail válido" />
+            <Input
+                type="email"
+                name="email"
+                placeholder="Digite um e-mail válido"
+            />
 
             <Input type="password" name="password" placeholder="Senha" />
 
@@ -115,9 +130,7 @@ export function SignupForm() {
                 </Button>
             )}
 
-            {loading && (
-                <Loading />
-            )}
+            {loading && <Loading />}
         </form>
     );
 }

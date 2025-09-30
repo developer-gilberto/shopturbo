@@ -9,14 +9,16 @@ import { FeedbackModal } from "../feedback-modal";
 import { Loading } from "../loading";
 
 export function LoginForm() {
-    const [ feedbackMessage, setFeedbackMessage ] = useState("");
-    const [ successfulRequest, setSuccessfulRequest ] = useState(false);
-    const [ loading, setLoading ] = useState(false);
+    const [feedbackMessage, setFeedbackMessage] = useState("");
+    const [successfulRequest, setSuccessfulRequest] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const timer = setTimeout(() => { setFeedbackMessage("") }, 3000);
+        const timer = setTimeout(() => {
+            setFeedbackMessage("");
+        }, 3000);
         return () => clearTimeout(timer);
-    }, [ feedbackMessage ]);
+    }, [feedbackMessage]);
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -24,36 +26,43 @@ export function LoginForm() {
 
         const userData = {
             email: formData.get("email"),
-            password: formData.get("password")
-        }
+            password: formData.get("password"),
+        };
 
         try {
             setLoading(true);
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/user/login`, {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/signin`,
+                {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(userData),
-                    credentials: "include"
-            });
+                    credentials: "include",
+                },
+            );
 
             if (!response.ok) {
                 setSuccessfulRequest(false);
-                const responseData = await response.json();
-                return setFeedbackMessage(responseData?.message?.issues[0]?.message) || "Erro ao tentar fazer login. Verifique se os dados estão corretos.";
+
+                return setFeedbackMessage(
+                    response.status === 401 || response.status === 400
+                        ? "Email ou senha incorretos."
+                        : "Erro ao tentar fazer login.",
+                );
             }
 
             setSuccessfulRequest(true);
-            const responseData = await response.json();
-            const message = responseData.message
-            // setFeedbackMessage("Login bem sucedido!");
-            setFeedbackMessage(message);
+            setFeedbackMessage("Login bem sucedido!");
 
-            setTimeout(() => { redirect("/dashboard") }, 3000);
-
+            setTimeout(() => {
+                redirect("/dashboard");
+            }, 3000);
         } catch (err) {
             setSuccessfulRequest(false);
-            return setFeedbackMessage(`Erro ao fazer login!\nTente novamente mais tarde...`);
+            return setFeedbackMessage(
+                `Erro ao fazer login!\nTente novamente mais tarde...`,
+            );
         } finally {
             setLoading(false);
         }
@@ -66,8 +75,12 @@ export function LoginForm() {
             onSubmit={handleSubmit}
             method="POST"
         >
-
-            { feedbackMessage && <FeedbackModal request={successfulRequest} message={feedbackMessage} /> }
+            {feedbackMessage && (
+                <FeedbackModal
+                    request={successfulRequest}
+                    message={feedbackMessage}
+                />
+            )}
 
             <h2 className="text-3xl font-extrabold">Login</h2>
 
@@ -91,9 +104,7 @@ export function LoginForm() {
                 </Button>
             )}
 
-            {loading && (
-                <Loading />
-            )}
+            {loading && <Loading />}
         </form>
     );
 }

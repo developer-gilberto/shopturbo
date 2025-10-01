@@ -15,9 +15,12 @@ export default function Dashboard() {
                     <Main>Dashboard</Main>
                     <div className="m-4">
                         {shop ? (
-                            <h1 className="text-[--primary_color] text-2xl">
-                                Bem vindo ao ShopTurbo {shop.shop_name}
-                            </h1>
+                            <div className="text-xl">
+                                Bem vindo ao ShopTurbo{" "}
+                                <span className="text-[--primary_color] text-2xl">
+                                    {shop.shop_name}
+                                </span>
+                            </div>
                         ) : (
                             <p>
                                 Você ainda não conectou o ShopTurbo à Shopee.

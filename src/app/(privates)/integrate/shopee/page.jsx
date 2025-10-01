@@ -40,9 +40,6 @@ export default function IntegrateApiShopee() {
             return alert("ShopTurbo já está conectado com a API Shopee!");
         }
 
-        // criar uma rota de callback(tem q colocar na OpenPlatform) para pegar o code da shopee e fazer uma request para GET /api/shopee/access-token depois router.replace("/dashboard") e em /dashboard, verificar se tem accessToken, se tiver, fazer request para /get-profile
-
-        // redirect(`${data.authorizationUrl}`);
         router.replace(`${data.authorizationUrl}`);
     }
 

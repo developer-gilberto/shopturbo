@@ -4,47 +4,84 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Loading } from "@/components/ui/loading";
 import { Button } from "@/components/ui/btn";
+import { FeedbackModal } from "@/components/ui/feedback-modal";
 
 export default function IntegrateApiShopee() {
+    const [feedbackMessage, setFeedbackMessage] = useState("");
+    const [successfulRequest, setSuccessfulRequest] = useState(false);
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
     async function handleIntegrateApiShopee() {
         setLoading(true);
 
-        //tratar erros com try catch
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_SERVER_URL}/api/shopee/auth-url`,
-            {
-                method: "GET",
-                credentials: "include",
-            },
-        );
+        try {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/api/shopee/auth-url`,
+                {
+                    method: "GET",
+                    credentials: "include",
+                },
+            );
 
-        if (!response.ok) {
-            setLoading(false);
+            if (!response.ok) {
+                setLoading(false);
+
+                console.error(
+                    "Ocorreu um erro na solicitação da url de autorização:",
+                    response.statusText,
+                );
+
+                return setFeedbackMessage(
+                    "Ocorreu um erro na solicitação da url de autorização! Tente novamente mais tarde...",
+                );
+            }
+
+            const data = await response.json();
+
+            // verificar se o shop ja concedeu a autorização para nao fazer outra chamada para a api
+            if (data.validToken) {
+                setLoading(false);
+                setSuccessfulRequest(true);
+
+                return setFeedbackMessage(
+                    "ShopTurbo já está conectado com a API Shopee!",
+                );
+            }
+
+            setSuccessfulRequest(true);
+            setFeedbackMessage(
+                "ShopTurbo está se conectando à Shopee. Aguarde...",
+            );
+
+            setTimeout(() => {
+                return router.replace(`${data.authorizationUrl}`);
+            }, 3000);
+        } catch (err) {
             console.error(
-                "Ocorreu um erro na solicitação da url de autorização:",
-                response.statusText,
+                "Ocorreu um erro na solicitação da url de autorização: ",
+                err.message,
             );
-            return alert(
-                "Ocorreu um erro na solicitação da url de autorização!",
+
+            setSuccessfulRequest(false);
+
+            return setFeedbackMessage(
+                "Ocorreu um erro inesperado! Tente novamente mais tarde...",
             );
-        }
-
-        const data = await response.json();
-
-        // verificar isso
-        if (data.validToken) {
+        } finally {
             setLoading(false);
-            return alert("ShopTurbo já está conectado com a API Shopee!");
         }
-
-        router.replace(`${data.authorizationUrl}`);
     }
 
     return (
         <section className="w-full h-dvh flex justify-evenly items-center gap-10">
+            {feedbackMessage && (
+                <FeedbackModal
+                    request={successfulRequest}
+                    message={feedbackMessage}
+                />
+            )}
+
             <div className="flex flex-col justify-between items-center gap-6 w-[768px]">
                 <div className="flex flex-col justify-center items-center">
                     <p className="text-xl">

@@ -55,10 +55,20 @@ export function SignupForm() {
             if (!response.ok) {
                 setSuccessfulRequest(false);
 
+                if (response.status === 409) {
+                    return setFeedbackMessage(
+                        "Email inválido! Tente um email diferente.",
+                    );
+                }
+
+                if (response.status === 400) {
+                    return setFeedbackMessage(
+                        "Dados inválidos. Verifique os dados e tente novamente.",
+                    );
+                }
+
                 return setFeedbackMessage(
-                    response.status === 400
-                        ? "Dados inválidos. Verifique os dados e tente novamente."
-                        : "Erro ao tentar criar conta!",
+                    "Ocorreu um erro ao tentar criar a conta!",
                 );
             }
 

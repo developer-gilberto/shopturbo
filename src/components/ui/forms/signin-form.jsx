@@ -45,10 +45,18 @@ export function LoginForm() {
             if (!response.ok) {
                 setSuccessfulRequest(false);
 
+                if (response.status === 401) {
+                    return setFeedbackMessage("Email ou senha incorretos!");
+                }
+
+                if (response.status === 400) {
+                    return setFeedbackMessage(
+                        "Dados inválidos! Verifique os dados e tente novamente.",
+                    );
+                }
+
                 return setFeedbackMessage(
-                    response.status === 401 || response.status === 400
-                        ? "Email ou senha incorretos."
-                        : "Erro ao tentar fazer login.",
+                    "Ocorreu um erro ao tentar fazer login! Tente novamente mais tarde...",
                 );
             }
 

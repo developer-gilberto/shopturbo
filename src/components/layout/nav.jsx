@@ -2,8 +2,68 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { FeedbackModal } from "@/components/ui/feedback-modal";
+import { Loading } from "@/components/ui/loading";
+import { useRouter } from "next/navigation";
 
 export function Nav() {
+    const router = useRouter();
+    const [feedbackMessage, setFeedbackMessage] = useState("");
+    const [successfulRequest, setSuccessfulRequest] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    async function handleLogOut() {
+        const userWantsToLeave = confirm("TEM CERTEZA QUE DESEJA SAIR?");
+
+        if (userWantsToLeave) {
+            setLoading(true);
+
+            const logout = async () => {
+                return await fetch(
+                    `${process.env.NEXT_PUBLIC_SERVER_URL}/signout`,
+                    {
+                        method: "POST",
+                        credentials: "include",
+                    },
+                );
+            };
+
+            try {
+                const response = await logout();
+
+                if (!response.ok) {
+                    setFeedbackMessage(
+                        "Ocorreu um erro ao tentar sair do ShopTurbo.",
+                    );
+
+                    setTimeout(() => {
+                        setFeedbackMessage("");
+                    }, 3000);
+                    return;
+                }
+
+                setSuccessfulRequest(true);
+                setFeedbackMessage("Bye Bye 👋");
+
+                setTimeout(() => {
+                    router.replace("/signin");
+                }, 3000);
+            } catch (err) {
+                console.log(err);
+                setFeedbackMessage(
+                    "Ocorreu um erro ao tentar deslogar do ShopTurbo.",
+                );
+
+                setTimeout(() => {
+                    setFeedbackMessage("");
+                }, 3000);
+            } finally {
+                setLoading(false);
+            }
+        }
+        return;
+    }
+
     const [highlightedTab, setHighlightedTab] = useState(null);
 
     function handleClick(event) {
@@ -93,14 +153,26 @@ export function Nav() {
                 </li>
 
                 <li className="flex rounded-md">
-                    <Link
-                        href="/logout"
-                        className="min-w-full bg-[--bg_4] py-1 px-2 rounded-md border-[1px] border-transparent hover:border-red-600 hover:text-red-500 hover:cursor-pointer font-extrabold"
-                    >
-                        Sair
-                    </Link>
+                    {!loading && (
+                        <Link
+                            onClick={handleLogOut}
+                            href="#"
+                            className="min-w-full bg-[--bg_4] py-1 px-2 rounded-md border-[1px] border-transparent hover:border-red-600 hover:text-red-500 hover:cursor-pointer font-extrabold"
+                        >
+                            Sair
+                        </Link>
+                    )}
+
+                    {loading && <Loading />}
                 </li>
             </ul>
+
+            {feedbackMessage && (
+                <FeedbackModal
+                    request={successfulRequest}
+                    message={feedbackMessage}
+                />
+            )}
         </nav>
     );
 }

@@ -15,7 +15,7 @@ export function SignupForm() {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const timer = setTimeout(() => setFeedbackMessage(""), 3000);
+        const timer = setTimeout(() => setFeedbackMessage(""), 1000);
         return () => clearTimeout(timer);
     }, [feedbackMessage]);
 
@@ -77,7 +77,7 @@ export function SignupForm() {
 
             setTimeout(() => {
                 router.replace("/signin");
-            }, 3000);
+            }, 1000);
         } catch (err) {
             setSuccessfulRequest(false);
             return setFeedbackMessage(

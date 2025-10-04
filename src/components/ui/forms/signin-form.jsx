@@ -4,11 +4,12 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/btn";
 import { useState, useEffect } from "react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { FeedbackModal } from "../feedback-modal";
 import { Loading } from "../loading";
 
 export function LoginForm() {
+    const router = useRouter();
     const [feedbackMessage, setFeedbackMessage] = useState("");
     const [successfulRequest, setSuccessfulRequest] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -16,7 +17,7 @@ export function LoginForm() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setFeedbackMessage("");
-        }, 3000);
+        }, 2000);
         return () => clearTimeout(timer);
     }, [feedbackMessage]);
 
@@ -64,8 +65,8 @@ export function LoginForm() {
             setFeedbackMessage("Login bem sucedido!");
 
             setTimeout(() => {
-                redirect("/dashboard");
-            }, 3000);
+                router.replace("/dashboard");
+            }, 2000);
         } catch (err) {
             setSuccessfulRequest(false);
             return setFeedbackMessage(

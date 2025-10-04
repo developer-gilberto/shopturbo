@@ -68,7 +68,6 @@ export function Nav() {
 
     function handleClick(event) {
         setHighlightedTab(event.currentTarget.id);
-        console.log("event.currentTarget.id: ", event.currentTarget.id);
     }
 
     // const buttons = [
@@ -76,7 +75,6 @@ export function Nav() {
     //   { id: "btn2", label: "Botão 2" },
     //   { id: "btn3", label: "Botão 3" },
     // ];
-    console.log(highlightedTab);
 
     return (
         <nav className="border border-[--bg_4] min-w-fit p-2">
@@ -145,10 +143,10 @@ export function Nav() {
                 </li>
                 <li className="flex rounded-md">
                     <Link
-                        href="#"
+                        href="my-account"
                         className="min-w-full bg-[--bg_4] py-1 px-2 rounded-md border-[1px] border-transparent hover:bg-[--bg_5] hover:border-[--bg_3] hover:cursor-pointer"
                     >
-                        Conta do Usuário
+                        Minha conta
                     </Link>
                 </li>
 

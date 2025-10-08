@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/btn";
-import { Input } from "@/components/ui/input";
-import { FeedbackModal } from "../feedback-modal";
-import { Loading } from "../loading";
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/btn';
+import { Input } from '@/components/ui/input';
+import { FeedbackModal } from '../feedback-modal';
+import { Loading } from '../loading';
 
 export function SignupForm() {
     const router = useRouter();
-    const [feedbackMessage, setFeedbackMessage] = useState("");
+    const [feedbackMessage, setFeedbackMessage] = useState('');
     const [successfulRequest, setSuccessfulRequest] = useState(false);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const timer = setTimeout(() => setFeedbackMessage(""), 1000);
+        const timer = setTimeout(() => setFeedbackMessage(''), 1000);
         return () => clearTimeout(timer);
     }, [feedbackMessage]);
 
@@ -24,19 +24,19 @@ export function SignupForm() {
         const formData = new FormData(event.target);
 
         const userData = {
-            name: formData.get("name"),
-            email: formData.get("email"),
-            password: formData.get("password"),
-            termsOfUse: formData.get("termsOfUse"),
+            name: formData.get('name'),
+            email: formData.get('email'),
+            password: formData.get('password'),
+            termsOfUse: formData.get('termsOfUse'),
         };
 
         if (!userData.name || !userData.email || !userData.password) {
-            return setFeedbackMessage("Preencha todos os campos!");
+            return setFeedbackMessage('Preencha todos os campos!');
         }
 
         if (!userData.termsOfUse) {
             return setFeedbackMessage(
-                "Você precisa aceitar os termos de uso para criar uma conta!",
+                'Você precisa aceitar os termos de uso para criar uma conta!'
             );
         }
 
@@ -46,10 +46,10 @@ export function SignupForm() {
             const response = await fetch(
                 `${process.env.NEXT_PUBLIC_SERVER_URL}/signup`,
                 {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(userData),
-                },
+                }
             );
 
             if (!response.ok) {
@@ -57,31 +57,29 @@ export function SignupForm() {
 
                 if (response.status === 409) {
                     return setFeedbackMessage(
-                        "Email inválido! Tente um email diferente.",
+                        'Email inválido! Tente um email diferente.'
                     );
                 }
 
                 if (response.status === 400) {
                     return setFeedbackMessage(
-                        "Dados inválidos. Verifique os dados e tente novamente.",
+                        'Dados inválidos. Verifique os dados e tente novamente.'
                     );
                 }
 
                 return setFeedbackMessage(
-                    "Ocorreu um erro ao tentar criar a conta!",
+                    'Ocorreu um erro ao tentar criar a conta!'
                 );
             }
 
             setSuccessfulRequest(true);
-            setFeedbackMessage("Conta criada com sucesso!");
+            setFeedbackMessage('Conta criada com sucesso!');
 
-            setTimeout(() => {
-                router.replace("/signin");
-            }, 1000);
+            router.replace('/signin');
         } catch (err) {
             setSuccessfulRequest(false);
             return setFeedbackMessage(
-                `Erro ao tentar criar conta!\nTente novamente mais tarde...`,
+                `Erro ao tentar criar conta!\nTente novamente mais tarde...`
             );
         } finally {
             setLoading(false);

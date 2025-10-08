@@ -1,66 +1,57 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { FeedbackModal } from "@/components/ui/feedback-modal";
-import { Loading } from "@/components/ui/loading";
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { FeedbackModal } from '@/components/ui/feedback-modal';
+import { Loading } from '@/components/ui/loading';
+import { fetchApiToken } from '../actions/fetchApiToken';
 
 export default function Callback() {
     const router = useRouter();
 
-    const [feedbackMessage, setFeedbackMessage] = useState("");
+    const [feedbackMessage, setFeedbackMessage] = useState('');
     const [successfulRequest, setSuccessfulRequest] = useState(false);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         try {
             const searchParams = new URLSearchParams(window.location.search);
-            const code = searchParams.get("code");
-            const shop_id = searchParams.get("shop_id");
+            const code = searchParams.get('code');
+            const shop_id = searchParams.get('shop_id');
 
             if (!code || !shop_id) {
                 return setFeedbackMessage(
-                    "'code' e 'shop_id' são obrigratórios.",
+                    "'code' e 'shop_id' são obrigratórios."
                 );
             }
 
             const fetchToken = async () => {
-                const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_SERVER_URL}/api/shopee/access-token?code=${code}&shop_id=${shop_id}`,
-                    {
-                        method: "GET",
-                        credentials: "include",
-                    },
-                );
+                const response = await fetchApiToken(code, shop_id);
 
-                if (!response.ok) {
+                if (response.status !== 200) {
                     setFeedbackMessage(
-                        "Ocorreu um erro ao tentar obter o token de acesso da API Shopee!",
+                        'Ocorreu um erro ao tentar obter o token de acesso da API Shopee!'
                     );
 
                     return setTimeout(() => {
-                        router.replace("/dashboard");
+                        router.replace('/dashboard');
                     }, 3000);
                 }
 
                 setSuccessfulRequest(true);
-                setFeedbackMessage(
-                    "Token de acesso obtido com sucesso. Aguarde...",
-                );
+                setFeedbackMessage('Aguarde...');
 
-                setTimeout(() => {
-                    router.replace("/get-shop-profile");
-                }, 3000);
+                router.replace('/dashboard');
             };
 
             fetchToken();
         } catch (err) {
-            console.log("err.message: ", err.message);
+            console.log('err.message: ', err.message);
             setFeedbackMessage(
-                "Ocorreu um erro ao tentar obter o token de acesso da API Shopee.",
+                'Ocorreu um erro ao tentar obter o token de acesso da API Shopee.'
             );
             setTimeout(() => {
-                router.replace("/dashboard");
+                router.replace('/dashboard');
             }, 3000);
         } finally {
             setLoading(false);

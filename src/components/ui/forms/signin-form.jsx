@@ -1,76 +1,65 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/btn";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { FeedbackModal } from "../feedback-modal";
-import { Loading } from "../loading";
+import Link from 'next/link';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/btn';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { FeedbackModal } from '../feedback-modal';
+import { Loading } from '../loading';
+import { signIn } from '@/app/actions/signIn';
 
 export function LoginForm() {
     const router = useRouter();
-    const [feedbackMessage, setFeedbackMessage] = useState("");
+    const [feedbackMessage, setFeedbackMessage] = useState('');
     const [successfulRequest, setSuccessfulRequest] = useState(false);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            setFeedbackMessage("");
+            setFeedbackMessage('');
         }, 2000);
         return () => clearTimeout(timer);
     }, [feedbackMessage]);
 
     async function handleSubmit(event) {
         event.preventDefault();
-        const formData = new FormData(event.target);
 
-        const userData = {
-            email: formData.get("email"),
-            password: formData.get("password"),
-        };
+        const formData = new FormData(event.target);
 
         try {
             setLoading(true);
 
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_SERVER_URL}/signin`,
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(userData),
-                    credentials: "include",
-                },
-            );
+            const response = await signIn(formData);
 
-            if (!response.ok) {
+            if (response !== 200) {
                 setSuccessfulRequest(false);
 
-                if (response.status === 401) {
-                    return setFeedbackMessage("Email ou senha incorretos!");
+                if (response === 401) {
+                    return setFeedbackMessage('Email ou senha incorretos!');
                 }
 
-                if (response.status === 400) {
+                if (response === 400) {
                     return setFeedbackMessage(
-                        "Dados inválidos! Verifique os dados e tente novamente.",
+                        'Dados inválidos! Verifique os dados e tente novamente.'
                     );
                 }
 
                 return setFeedbackMessage(
-                    "Ocorreu um erro ao tentar fazer login! Tente novamente mais tarde...",
+                    'Ocorreu um erro ao tentar fazer login! Tente novamente mais tarde...'
                 );
             }
 
-            setSuccessfulRequest(true);
-            setFeedbackMessage("Login bem sucedido!");
+            // se o middleware nao conseguir acesso ao cookie, tentar definir aqui no client
 
-            setTimeout(() => {
-                router.replace("/dashboard");
-            }, 2000);
+            setSuccessfulRequest(true);
+            setFeedbackMessage('Login bem sucedido!');
+
+            router.replace('/dashboard');
         } catch (err) {
             setSuccessfulRequest(false);
             return setFeedbackMessage(
-                `Erro ao fazer login!\nTente novamente mais tarde...`,
+                `Erro ao fazer login!\nTente novamente mais tarde...`
             );
         } finally {
             setLoading(false);

@@ -1,61 +1,41 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useState } from "react";
-import { FeedbackModal } from "@/components/ui/feedback-modal";
-import { Loading } from "@/components/ui/loading";
-import { useRouter } from "next/navigation";
+import Link from 'next/link';
+import { useState } from 'react';
+import { FeedbackModal } from '@/components/ui/feedback-modal';
+import { Loading } from '@/components/ui/loading';
+import { useRouter } from 'next/navigation';
+import { signOut } from '@/app/actions/signOut';
 
 export function Nav() {
     const router = useRouter();
-    const [feedbackMessage, setFeedbackMessage] = useState("");
+    const [feedbackMessage, setFeedbackMessage] = useState('');
     const [successfulRequest, setSuccessfulRequest] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    async function handleLogOut() {
-        const userWantsToLeave = confirm("TEM CERTEZA QUE DESEJA SAIR?");
+    async function handleSignOut() {
+        const userWantsToLeave = confirm('🤔 TEM CERTEZA QUE DESEJA SAIR?');
 
         if (userWantsToLeave) {
             setLoading(true);
 
-            const logout = async () => {
-                return await fetch(
-                    `${process.env.NEXT_PUBLIC_SERVER_URL}/signout`,
-                    {
-                        method: "POST",
-                        credentials: "include",
-                    },
-                );
-            };
-
             try {
-                const response = await logout();
-
-                if (!response.ok) {
-                    setFeedbackMessage(
-                        "Ocorreu um erro ao tentar sair do ShopTurbo.",
-                    );
-
-                    setTimeout(() => {
-                        setFeedbackMessage("");
-                    }, 3000);
-                    return;
-                }
+                await signOut();
 
                 setSuccessfulRequest(true);
-                setFeedbackMessage("Bye Bye 👋");
+                setFeedbackMessage('Bye Bye 👋');
 
                 setTimeout(() => {
-                    router.replace("/signin");
+                    router.replace('/signin');
                 }, 3000);
             } catch (err) {
                 console.log(err);
                 setFeedbackMessage(
-                    "Ocorreu um erro ao tentar deslogar do ShopTurbo.",
+                    'Ocorreu um erro ao tentar deslogar do ShopTurbo.'
                 );
 
                 setTimeout(() => {
-                    setFeedbackMessage("");
+                    setFeedbackMessage('');
                 }, 3000);
             } finally {
                 setLoading(false);
@@ -86,7 +66,11 @@ export function Nav() {
                 >
                     <Link
                         href="/dashboard"
-                        className={`min-w-full ${highlightedTab === "dashboardId" ? "bg-[--bg_5]" : "bg-[--bg_4]"} py-1 px-2 rounded-md border-[1px] border-transparent hover:bg-[--bg_5] hover:border-[--bg_3] hover:cursor-pointer`}
+                        className={`min-w-full ${
+                            highlightedTab === 'dashboardId'
+                                ? 'bg-[--bg_5]'
+                                : 'bg-[--bg_4]'
+                        } py-1 px-2 rounded-md border-[1px] border-transparent hover:bg-[--bg_5] hover:border-[--bg_3] hover:cursor-pointer`}
                     >
                         Dashboard
                     </Link>
@@ -153,7 +137,7 @@ export function Nav() {
                 <li className="flex rounded-md">
                     {!loading && (
                         <Link
-                            onClick={handleLogOut}
+                            onClick={handleSignOut}
                             href="#"
                             className="min-w-full bg-[--bg_4] py-1 px-2 rounded-md border-[1px] border-transparent hover:border-red-600 hover:text-red-500 hover:cursor-pointer font-extrabold"
                         >

@@ -31,6 +31,7 @@ export async function signIn(formData) {
             path: '/',
             priority: 'high',
             maxAge: 60 * 60 * 24, // 24h em segundos
+            domain: '.gilbertolopes.dev',
         });
 
         return 200;

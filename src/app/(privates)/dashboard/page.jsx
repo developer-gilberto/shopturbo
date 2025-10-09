@@ -13,23 +13,23 @@ export default function Dashboard() {
 
     useEffect(() => {
         async function fetchShop() {
-            const response = await fetchShopProfile();
+            try {
+                setLoading(true);
 
-            if (response.status !== 200) return;
+                const response = await fetchShopProfile();
 
-            const shopData = response.data;
+                if (response.status !== 200) return;
 
-            setShop(shopData);
+                const shopData = response.data;
+                setShop(shopData);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
         }
 
-        try {
-            setLoading(true);
-            fetchShop();
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
+        fetchShop();
     }, []);
 
     return (

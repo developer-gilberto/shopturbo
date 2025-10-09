@@ -64,16 +64,23 @@ export default function IntegrateApiShopee() {
             <div className="flex flex-col justify-between items-center gap-6 w-[768px]">
                 <div className="flex flex-col justify-center items-center">
                     <p className="text-xl">
-                        Clique no botão abaixo para conceder a autorização para
-                        o <span className="text-primary_color">ShopTurbo</span>{' '}
-                        se integrar com a{' '}
-                        <span className="font-bold">API da Shopee!</span>
+                        Ao clicar no botão abaixo, você vai ser redirecionado
+                        para fazer login na Shopee. Entre com a conta da sua
+                        loja Shopee que deseja conectar ao ShopTurbo.
+                    </p>
+                    <p className="text-xl">
+                        Após o login, clique em{' '}
+                        <span className="text-primary_color">
+                            "Confirmar autorização"
+                        </span>{' '}
+                        e pronto! Agora é só usufruir do ShopTurbo para ter
+                        controle e gestão total da sua loja Shopee.
                     </p>
                 </div>
                 <div className="mt-4">
                     {!loading && (
                         <Button onClick={handleIntegrateApiShopee}>
-                            Conectar-se à Shopee
+                            Conectar Shopturbo à minha loja Shopee
                         </Button>
                     )}
 

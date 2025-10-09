@@ -15,7 +15,7 @@ export default function Dashboard() {
         async function fetchShop() {
             const response = await fetchShopProfile();
 
-            if (response.status !== 200) return null;
+            if (response.status !== 200) return;
 
             const shopData = response.data;
 
@@ -23,6 +23,7 @@ export default function Dashboard() {
         }
 
         try {
+            setLoading(true);
             fetchShop();
         } catch (err) {
             console.error(err);
@@ -38,6 +39,8 @@ export default function Dashboard() {
                 <div>
                     <Main>Dashboard</Main>
                     <div className="m-4">
+                        {loading && <Loading />}
+
                         {shop ? (
                             <div className="text-xl">
                                 Bem vindo ao ShopTurbo{' '}
@@ -52,7 +55,6 @@ export default function Dashboard() {
                                 sua loja aparecerão aqui.
                             </p>
                         )}
-                        {loading && <Loading />}
                     </div>
                 </div>
             </section>

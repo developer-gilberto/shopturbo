@@ -6,4 +6,5 @@ export async function signOut() {
     const cookie = await cookies();
 
     cookie.delete('shopturboAuthToken');
+    cookie.delete('shopturboShopId');
 }

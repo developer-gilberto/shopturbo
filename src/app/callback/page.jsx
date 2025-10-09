@@ -25,10 +25,14 @@ export default function Callback() {
                 );
             }
 
+            setSuccessfulRequest(true);
+            setFeedbackMessage('Aguarde...');
+
             const fetchToken = async () => {
                 const response = await fetchApiToken(code, shop_id);
 
                 if (response.status !== 200) {
+                    setSuccessfulRequest(false);
                     setFeedbackMessage(
                         'Ocorreu um erro ao tentar obter o token de acesso da API Shopee!'
                     );
@@ -67,9 +71,7 @@ export default function Callback() {
                 />
             )}
 
-            <h1 className="mb-4">
-                Solicitando o token de acesso da API da Shopee. Aguarde...
-            </h1>
+            <h1 className="mb-4">Aguarde...</h1>
 
             {loading && <Loading />}
         </div>

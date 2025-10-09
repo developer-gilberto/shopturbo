@@ -29,6 +29,7 @@ export async function signIn(formData) {
             secure: true,
             sameSite: 'lax',
             path: '/',
+            priority: 'high',
             maxAge: 60 * 60 * 24, // 24h em segundos
         });
 

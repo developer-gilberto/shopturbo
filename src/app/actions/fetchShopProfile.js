@@ -8,7 +8,9 @@ export async function fetchShopProfile() {
     const shopturboAuthToken = cookie.get('shopturboAuthToken')?.value;
     const shopturboShopId = cookie.get('shopturboShopId')?.value;
 
-    if (!shopturboAuthToken || !shopturboShopId) return { status: 401 };
+    if (!shopturboAuthToken || !shopturboShopId) {
+        return { status: 401, data: null };
+    }
 
     try {
         const response = await fetch(
@@ -22,12 +24,12 @@ export async function fetchShopProfile() {
             }
         );
 
-        if (!response.ok) return { status: response.status };
+        if (!response.ok) return { status: response.status, data: null };
 
         const shopData = await response.json();
 
         return { status: 200, data: shopData.data };
     } catch (err) {
-        return { status: 500 };
+        return { status: 500, data: null };
     }
 }

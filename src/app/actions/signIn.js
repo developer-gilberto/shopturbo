@@ -30,7 +30,7 @@ export async function signIn(formData) {
             sameSite: 'lax',
             path: '/',
             maxAge: 60 * 60 * 24, // 24h em segundos
-            domain: 'shopturbo.gilbertolopes.dev',
+            domain: '.gilbertolopes.dev',
         });
 
         return 200;

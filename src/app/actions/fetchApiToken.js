@@ -30,7 +30,7 @@ export async function fetchApiToken(code, shop_id) {
             sameSite: 'lax',
             path: '/',
             expires: new Date(accessTokenData.data.expireIn),
-            domain: 'shopturbo.gilbertolopes.dev',
+            domain: '.gilbertolopes.dev',
         });
 
         return { status: 200, shopId: accessTokenData.data.shopId };

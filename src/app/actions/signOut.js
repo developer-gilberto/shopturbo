@@ -11,7 +11,7 @@ export async function signOut() {
         sameSite: 'lax',
         path: '/',
         maxAge: 0,
-        domain: 'shopturbo.gilbertolopes.dev',
+        domain: '.gilbertolopes.dev',
     });
 
     cookie.set('shopturboShopId', '', {
@@ -20,6 +20,6 @@ export async function signOut() {
         sameSite: 'lax',
         path: '/',
         expires: new Date(Date.now() - 1000),
-        domain: 'shopturbo.gilbertolopes.dev',
+        domain: '.gilbertolopes.dev',
     });
 }

@@ -1,10 +1,10 @@
 import { Main } from '@/components/layout/main';
 
-export default function Terms() {
+export default function Signature() {
     return (
         <>
             <section className=" w-full min-h-screen flex">
-                <Main>Termos de uso ShopTurbo</Main>
+                <Main>Assinatura</Main>
             </section>
         </>
     );

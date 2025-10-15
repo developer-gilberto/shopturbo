@@ -24,13 +24,15 @@ export async function signIn(formData) {
 
         const cookie = await cookies();
 
+        const isProduction = !!process.env.NODE_ENV === 'production';
+
         cookie.set('shopturboAuthToken', data.token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'lax',
+            httpOnly: isProduction,
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
             path: '/',
             maxAge: 60 * 60 * 24, // 24h em segundos
-            domain: '.gilbertolopes.dev',
+            domain: isProduction ? process.env.COOKIES_DOMAIN : 'localhost',
         });
 
         return 200;

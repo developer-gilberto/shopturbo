@@ -25,6 +25,8 @@ export async function middleware(request) {
     try {
         await jwtVerify(token, SECRET);
 
+        // redirecionar o usuario para dashboard caso ele tente acessar /signin estando logado.
+
         const requestHeaders = new Headers(request.headers);
         requestHeaders.set('Authorization', `Bearer ${token}`);
 

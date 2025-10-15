@@ -24,13 +24,15 @@ export async function fetchApiToken(code, shop_id) {
 
         const accessTokenData = await response.json();
 
+        const isProduction = !!process.env.NODE_ENV === 'production';
+
         cookie.set('shopturboShopId', accessTokenData.data.shopId, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'lax',
+            httpOnly: isProduction,
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
             path: '/',
             expires: new Date(accessTokenData.data.expireIn),
-            domain: '.gilbertolopes.dev',
+            domain: isProduction ? process.env.COOKIES_DOMAIN : 'localhost',
         });
 
         return { status: 200, shopId: accessTokenData.data.shopId };

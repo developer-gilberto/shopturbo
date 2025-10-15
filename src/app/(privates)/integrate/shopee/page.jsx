@@ -6,6 +6,8 @@ import { Loading } from '@/components/ui/loading';
 import { Button } from '@/components/ui/btn';
 import { FeedbackModal } from '@/components/ui/feedback-modal';
 import { fetchAuthUrl } from '@/app/actions/fetchAuthUrl';
+import { Nav } from '@/components/layout/nav';
+import { Main } from '@/components/layout/main';
 
 export default function IntegrateApiShopee() {
     const [feedbackMessage, setFeedbackMessage] = useState('');
@@ -53,40 +55,44 @@ export default function IntegrateApiShopee() {
     }
 
     return (
-        <section className="w-full h-dvh flex justify-evenly items-center gap-10">
-            {feedbackMessage && (
-                <FeedbackModal
-                    request={successfulRequest}
-                    message={feedbackMessage}
-                />
-            )}
+        <section className=" w-full min-h-screen flex">
+            <Nav />
+            <Main>
+                {feedbackMessage && (
+                    <FeedbackModal
+                        request={successfulRequest}
+                        message={feedbackMessage}
+                    />
+                )}
 
-            <div className="flex flex-col justify-between items-center gap-6 w-[768px]">
-                <div className="flex flex-col justify-center items-center">
-                    <p className="text-xl">
-                        Ao clicar no botão abaixo, você vai ser redirecionado
-                        para fazer login na Shopee. Entre com a conta da sua
-                        loja Shopee que deseja conectar ao ShopTurbo.
-                    </p>
-                    <p className="text-xl">
-                        Após o login, clique em{' '}
-                        <span className="text-primary_color">
-                            "Confirmar autorização"
-                        </span>{' '}
-                        e pronto! Agora é só usufruir do ShopTurbo para ter
-                        controle e gestão total da sua loja Shopee.
-                    </p>
-                </div>
-                <div className="mt-4">
-                    {!loading && (
-                        <Button onClick={handleIntegrateApiShopee}>
-                            Conectar Shopturbo à minha loja Shopee
-                        </Button>
-                    )}
+                <div className="w-full min-h-screen flex flex-col justify-center items-center gap-6">
+                    <div className="flex flex-col justify-center items-center">
+                        <p className="text-xl">
+                            Ao clicar no botão abaixo, você vai ser
+                            redirecionado para fazer login na Shopee. Entre com
+                            a conta da sua loja Shopee que deseja conectar ao
+                            ShopTurbo.
+                        </p>
+                        <p className="text-xl">
+                            Após o login, clique em{' '}
+                            <span className="text-primary_color">
+                                "Confirmar autorização"
+                            </span>{' '}
+                            e pronto! Agora é só usufruir do ShopTurbo para ter
+                            controle e gestão total da sua loja Shopee.
+                        </p>
+                    </div>
+                    <div className="mt-4">
+                        {!loading && (
+                            <Button onClick={handleIntegrateApiShopee}>
+                                Conectar Shopturbo à minha loja Shopee
+                            </Button>
+                        )}
 
-                    {loading && <Loading />}
+                        {loading && <Loading />}
+                    </div>
                 </div>
-            </div>
+            </Main>
         </section>
     );
 }

@@ -5,21 +5,23 @@ import { cookies } from 'next/headers';
 export async function signOut() {
     const cookie = await cookies();
 
+    const isProduction = !!process.env.NODE_ENV === 'production';
+
     cookie.set('shopturboAuthToken', '', {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'lax',
+        httpOnly: isProduction,
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
         path: '/',
         maxAge: 0,
-        domain: '.gilbertolopes.dev',
+        domain: isProduction ? process.env.COOKIES_DOMAIN : 'localhost',
     });
 
     cookie.set('shopturboShopId', '', {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'lax',
+        httpOnly: isProduction,
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
         path: '/',
         expires: new Date(Date.now() - 1000),
-        domain: '.gilbertolopes.dev',
+        domain: isProduction ? process.env.COOKIES_DOMAIN : 'localhost',
     });
 }

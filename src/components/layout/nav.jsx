@@ -6,20 +6,26 @@ import { FeedbackModal } from '@/components/ui/feedback-modal';
 import { Loading } from '@/components/ui/loading';
 import { useRouter } from 'next/navigation';
 import { signOut } from '@/app/actions/signOut';
+import { useShop } from '@/context/shopContext';
 
 export function Nav() {
     const router = useRouter();
     const [feedbackMessage, setFeedbackMessage] = useState('');
     const [successfulRequest, setSuccessfulRequest] = useState(false);
     const [loading, setLoading] = useState(false);
+    const { _shop, setShop } = useShop();
 
-    async function handleSignOut() {
+    async function handleSignOut(e) {
+        e.preventDefault();
+
         const userWantsToLeave = confirm('🤔 TEM CERTEZA QUE DESEJA SAIR?');
 
         if (userWantsToLeave) {
             setLoading(true);
 
             try {
+                setShop(null);
+
                 await signOut();
 
                 setSuccessfulRequest(true);
@@ -127,7 +133,7 @@ export function Nav() {
                 </li>
                 <li className="flex rounded-md">
                     <Link
-                        href="my-account"
+                        href="/my-account"
                         className="min-w-full bg-[--bg_4] py-1 px-2 rounded-md border-[1px] border-transparent hover:bg-[--bg_5] hover:border-[--bg_3] hover:cursor-pointer"
                     >
                         Minha conta
@@ -138,7 +144,7 @@ export function Nav() {
                     {!loading && (
                         <Link
                             onClick={handleSignOut}
-                            href="#"
+                            href="/signout"
                             className="min-w-full bg-[--bg_4] py-1 px-2 rounded-md border-[1px] border-transparent hover:border-red-600 hover:text-red-500 hover:cursor-pointer font-extrabold"
                         >
                             Sair

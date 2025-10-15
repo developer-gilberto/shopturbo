@@ -1,10 +1,12 @@
 import { Main } from '@/components/layout/main';
+import { Nav } from '@/components/layout/nav';
 
-export default function Terms() {
+export default function MyAccount() {
     return (
         <>
             <section className=" w-full min-h-screen flex">
-                <Main>Termos de uso ShopTurbo</Main>
+                <Nav />
+                <Main>Minha conta</Main>
             </section>
         </>
     );

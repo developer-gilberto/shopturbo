@@ -24,7 +24,7 @@ export async function signIn(formData) {
 
         const cookie = await cookies();
 
-        const isProduction = !!process.env.NODE_ENV === 'production';
+        const isProduction = process.env.NODE_ENV === 'production';
 
         cookie.set('shopturboAuthToken', data.token, {
             httpOnly: isProduction,

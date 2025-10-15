@@ -24,7 +24,7 @@ export async function fetchApiToken(code, shop_id) {
 
         const accessTokenData = await response.json();
 
-        const isProduction = !!process.env.NODE_ENV === 'production';
+        const isProduction = process.env.NODE_ENV === 'production';
 
         cookie.set('shopturboShopId', accessTokenData.data.shopId, {
             httpOnly: isProduction,

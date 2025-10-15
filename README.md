@@ -1,5 +1,6 @@
 # **ShopTurbo** Descomplique suas vendas na Shopee! 🚀
-<img width="1913" height="961" alt="shopturbo-readme" src="https://github.com/user-attachments/assets/92c41816-079d-4a03-b17b-662ac796b58c" />
+
+<img width="1913" height="961" alt="shopturbo-readme" src="https://github.com/user-attachments/assets/fc85be71-f0ed-4402-bf5d-1ab6f38f5924" />
 
 Um sistema ERP frontend Next.js com uma API criada com express(projeto separado) para gerenciamento e integração com a plataforma da Shopee, oferecendo gestão e controle total de vendas para lojas na Shopee.
 

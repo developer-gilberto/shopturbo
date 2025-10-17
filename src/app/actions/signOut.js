@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 export async function signOut() {
     const cookie = await cookies();
 
-    const isProduction = !!process.env.NODE_ENV === 'production';
+    const isProduction = process.env.NODE_ENV === 'production';
 
     cookie.set('shopturboAuthToken', '', {
         httpOnly: isProduction,

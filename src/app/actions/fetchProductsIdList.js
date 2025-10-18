@@ -14,7 +14,7 @@ export async function fetchProductsIdList() {
 
     try {
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_SERVER_URL}/api/shopee/shop/${shopturboShopId}/products/id-list?offset=0&page_size=100&item_status=NORMAL`,
+            `${process.env.NEXT_PUBLIC_SERVER_URL}/api/shopee/shop/${shopturboShopId}/products/id-list?offset=0&page_size=20&item_status=NORMAL`,
             {
                 method: 'GET',
                 headers: {

@@ -4,7 +4,7 @@ import { Main } from '@/components/layout/main';
 import { Nav } from '@/components/layout/nav';
 import { useShop } from '@/context/shopContext';
 import { useEffect, useState } from 'react';
-import { Loading } from '@/components/ui/loading';
+import { IsLoading } from '@/components/ui/isLoading';
 import { useProducts } from '@/context/productContext';
 import { fetchProductsIdList } from '@/app/actions/fetchProductsIdList';
 import { fetchProductsInfo } from '@/app/actions/fetchProductsInfo';
@@ -18,7 +18,7 @@ export default function Products() {
 
     useEffect(() => {
         async function fetchProducts() {
-            if (products.length > 0) {
+            if (products && products.length > 0) {
                 setLoading(false);
                 return;
             }
@@ -69,7 +69,7 @@ export default function Products() {
                                 </p>
                             )}
 
-                            {loading && <Loading />}
+                            {loading && <IsLoading width="w-[340px]" />}
                         </section>
 
                         <section className="overflow-x-auto mt-4 rounded-md border border-[--bg_4]">
@@ -96,17 +96,17 @@ export default function Products() {
 
                                 <tbody>
                                     {products.map((product) => {
-                                        const precoVenda =
+                                        const sellingPrice =
                                             product.price_info[0].current_price;
 
-                                        const precoCusto = product.price_info[0]
-                                            .original_price
-                                            ? product.price_info[0]
-                                                  .original_price
-                                            : precoVenda * 0.8; // fallback se não houver preço de custo
+                                        const inputCostPrice = 4500;
+                                        const inputTaxes = 10;
 
-                                        const lucro = precoVenda - precoCusto;
-                                        // const lucro = 5000 - 1998; // teste
+                                        const costPrice = inputCostPrice;
+
+                                        const profit =
+                                            sellingPrice -
+                                            (costPrice + inputTaxes);
 
                                         return (
                                             <tr
@@ -209,20 +209,19 @@ export default function Products() {
                                                 <td className="p-3 text-gray-300">
                                                     <span className="flex justify-start items-center gap-4 text-gray-100">
                                                         R$ 1,99
-                                                        {/* <FaRegEdit className="text-xl text-gray-300 hover:text-[--bg_2] hover:cursor-pointer" /> */}
                                                     </span>
                                                 </td>
 
                                                 {/* Coluna Lucro */}
                                                 <td
                                                     className={`p-3 font-bold ${
-                                                        lucro >= 0
+                                                        profit >= 0
                                                             ? 'text-green-400'
                                                             : 'text-red-500'
                                                     }`}
                                                 >
                                                     {Number(
-                                                        lucro
+                                                        profit
                                                     ).toLocaleString('pt-BR', {
                                                         style: 'currency',
                                                         currency: 'BRL',

@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { FeedbackModal } from '@/components/ui/feedback-modal';
-import { Loading } from '@/components/ui/loading';
+import { IsLoading } from '@/components/ui/isLoading';
 import { fetchApiToken } from '../actions/fetchApiToken';
 
 export default function Callback() {
@@ -17,6 +17,7 @@ export default function Callback() {
         try {
             const searchParams = new URLSearchParams(window.location.search);
             const code = searchParams.get('code');
+            IsLoading;
             const shop_id = searchParams.get('shop_id');
 
             if (!code || !shop_id) {
@@ -73,7 +74,7 @@ export default function Callback() {
 
             <h1 className="mb-4">Aguarde...</h1>
 
-            {loading && <Loading />}
+            {loading && <IsLoading width="w-[340px]" />}
         </div>
     );
 }

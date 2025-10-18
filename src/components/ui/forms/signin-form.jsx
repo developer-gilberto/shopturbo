@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/btn';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { FeedbackModal } from '../feedback-modal';
-import { Loading } from '../loading';
+import { IsLoading } from '../isLoading';
 import { signIn } from '@/app/actions/signIn';
 
 export function LoginForm() {
@@ -102,7 +102,7 @@ export function LoginForm() {
                 </Button>
             )}
 
-            {loading && <Loading />}
+            {loading && <IsLoading />}
         </form>
     );
 }

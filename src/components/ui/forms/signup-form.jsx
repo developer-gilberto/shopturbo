@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/btn';
 import { Input } from '@/components/ui/input';
 import { FeedbackModal } from '../feedback-modal';
-import { Loading } from '../loading';
+import { IsLoading } from '../isLoading';
 
 export function SignupForm() {
     const router = useRouter();
@@ -138,7 +138,7 @@ export function SignupForm() {
                 </Button>
             )}
 
-            {loading && <Loading />}
+            {loading && <IsLoading />}
         </form>
     );
 }

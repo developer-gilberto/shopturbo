@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { FeedbackModal } from '@/components/ui/feedback-modal';
-import { Loading } from '@/components/ui/loading';
+import { IsLoading } from '@/components/ui/isLoading';
 import { useRouter } from 'next/navigation';
 import { signOut } from '@/app/actions/signOut';
 import { useShop } from '@/context/shopContext';
+import { useProducts } from '@/context/productContext';
 
 export function Nav() {
     const router = useRouter();
@@ -14,6 +15,7 @@ export function Nav() {
     const [successfulRequest, setSuccessfulRequest] = useState(false);
     const [loading, setLoading] = useState(false);
     const { _shop, setShop } = useShop();
+    const { _products, setProducts } = useProducts();
 
     async function handleSignOut(e) {
         e.preventDefault();
@@ -33,7 +35,7 @@ export function Nav() {
 
                 setTimeout(() => {
                     router.replace('/signin');
-                }, 3000);
+                }, 2000);
             } catch (err) {
                 console.log(err);
                 setFeedbackMessage(
@@ -151,7 +153,7 @@ export function Nav() {
                         </Link>
                     )}
 
-                    {loading && <Loading />}
+                    {loading && <IsLoading />}
                 </li>
             </ul>
 

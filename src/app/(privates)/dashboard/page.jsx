@@ -3,7 +3,7 @@
 import { Main } from '@/components/layout/main';
 import { Nav } from '@/components/layout/nav';
 import { useEffect, useState } from 'react';
-import { Loading } from '@/components/ui/loading';
+import { IsLoading } from '@/components/ui/isLoading';
 import { fetchProductsIdList } from '@/app/actions/fetchProductsIdList';
 import { fetchProductsInfo } from '@/app/actions/fetchProductsInfo';
 import { fetchShopProfile } from '@/app/actions/fetchShopProfile';
@@ -17,7 +17,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         async function fetchShopData() {
-            if (shop && products.length > 0) return;
+            if (shop && products && products.length > 0) return;
 
             try {
                 setLoading(true);
@@ -63,16 +63,24 @@ export default function Dashboard() {
                 <Nav />
                 <Main>
                     <div>
-                        {loading && <Loading />}
+                        {loading && <IsLoading width="w-[340px]" />}
 
-                        {!loading && products.length === 0 && (
+                        {!loading && !shop && (
+                            <p className="text-gray-400 text-center">
+                                Você ainda não conectou o ShopTurbo à Shopee.
+                                Quando você autorizar nosso sistema, os dados da
+                                sua loja aparecerão aqui.
+                            </p>
+                        )}
+
+                        {!loading && products && products.length === 0 && (
                             <p className="text-gray-400 text-center">
                                 Nenhum produto encontrado.
                             </p>
                         )}
 
-                        {!loading && products.length > 0 && (
-                            <p className="text-gray-400 text-center">
+                        {!loading && products && products.length > 0 && (
+                            <p className="text-gray-300 text-center mb-4">
                                 Alguns dos produtos da sua loja:
                             </p>
                         )}

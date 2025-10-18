@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { FaUser } from 'react-icons/fa';
 import { fetchShopProfile } from '@/app/actions/fetchShopProfile';
 import { useEffect, useState } from 'react';
-import { Loading } from '../ui/loading';
+import { IsLoading } from '../ui/isLoading';
 
 export function Header() {
     const { shop, setShop } = useShop();
@@ -54,23 +54,15 @@ export function Header() {
                 &reg;
             </Link>
 
-            {loading ? (
-                <div className="max-w-96">
-                    <Loading />
-                </div>
-            ) : shop ? (
+            {loading && <IsLoading width="w-[320px]" />}
+
+            {shop && (
                 <div className="flex justify-center items-center gap-4 text-xl">
                     Bem vindo ao ShopTurbo 🚀{' '}
                     <span className="text-[--primary_color] text-2xl">
                         {shop.shop_name}
                     </span>
                 </div>
-            ) : (
-                <p>
-                    Você ainda não conectou o ShopTurbo à Shopee. Quando você
-                    autorizar nosso sistema, os dados da sua loja aparecerão
-                    aqui.
-                </p>
             )}
 
             {shop && (

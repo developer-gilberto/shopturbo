@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Loading } from '@/components/ui/loading';
+import { IsLoading } from '@/components/ui/isLoading';
 import { Button } from '@/components/ui/btn';
 import { FeedbackModal } from '@/components/ui/feedback-modal';
 import { fetchAuthUrl } from '@/app/actions/fetchAuthUrl';
@@ -89,7 +89,7 @@ export default function IntegrateApiShopee() {
                             </Button>
                         )}
 
-                        {loading && <Loading />}
+                        {loading && <IsLoading width="w-[340px]" />}
                     </div>
                 </div>
             </Main>

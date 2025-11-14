@@ -5,10 +5,18 @@ import { createContext, useContext, useState } from 'react';
 const ProductsContext = createContext(null);
 
 export function ProductsProvider({ children }) {
-    const [products, setProducts] = useState([]);
+    const [productsShopee, setProductsShopee] = useState([]);
+    const [productsShopturbo, setProductsShopturbo] = useState([]);
 
     return (
-        <ProductsContext.Provider value={{ products, setProducts }}>
+        <ProductsContext.Provider
+            value={{
+                productsShopee,
+                productsShopturbo,
+                setProductsShopee,
+                setProductsShopturbo,
+            }}
+        >
             {children}
         </ProductsContext.Provider>
     );
@@ -17,9 +25,7 @@ export function ProductsProvider({ children }) {
 export function useProducts() {
     const context = useContext(ProductsContext);
     if (!context) {
-        throw new Error(
-            'useProducts deve ser usado dentro de um ProductsProvider'
-        );
+        throw new Error('useProducts deve ser usado dentro de um ProductsProvider');
     }
     return context;
 }

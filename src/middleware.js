@@ -25,8 +25,6 @@ export async function middleware(request) {
     try {
         await jwtVerify(token, SECRET);
 
-        // redirecionar o usuario para dashboard caso ele tente acessar /signin estando logado.
-
         const requestHeaders = new Headers(request.headers);
         requestHeaders.set('Authorization', `Bearer ${token}`);
 
@@ -51,9 +49,11 @@ export async function middleware(request) {
 export const config = {
     matcher: [
         '/callback/:path*',
+        '/commission/:path*',
         '/dashboard/:path*',
-        '/get-shop-profile/:path*',
         '/integrate/:path*',
+        '/my-account/:path*',
+        '/orders/:path*',
         '/products/:path*',
         '/profit/:path*',
         '/support/:path*',

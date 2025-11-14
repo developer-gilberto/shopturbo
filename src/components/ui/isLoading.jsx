@@ -1,6 +1,6 @@
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
-export function IsLoading({ width }) {
+export function IsLoading({ width, label }) {
     return (
         <div
             className={`flex justify-center items-center gap-2 bg-primary_color w-full text-xl text-center font-extrabold py-1 px-2 rounded-md ${
@@ -8,7 +8,7 @@ export function IsLoading({ width }) {
             } `}
         >
             <AiOutlineLoading3Quarters className="animate-spin" />
-            Carregando...
+            {label ? label : 'Carregando...'}
         </div>
     );
 }

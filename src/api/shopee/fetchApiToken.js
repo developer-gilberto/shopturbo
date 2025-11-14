@@ -20,7 +20,12 @@ export async function fetchApiToken(code, shop_id) {
             }
         );
 
-        if (!response.ok) return { status: response.status };
+        if (!response.ok)
+            return {
+                status: response.status,
+                message:
+                    'There was a problem trying to get the access token in fetchApiToken()',
+            };
 
         const accessTokenData = await response.json();
 
@@ -37,6 +42,11 @@ export async function fetchApiToken(code, shop_id) {
 
         return { status: 200, shopId: accessTokenData.data.shopId };
     } catch (err) {
-        return { status: 500, message: err.message, erro: err };
+        return {
+            status: 500,
+            message:
+                'There was a problem trying to get the access token in fetchApiToken()',
+            data: err,
+        };
     }
 }

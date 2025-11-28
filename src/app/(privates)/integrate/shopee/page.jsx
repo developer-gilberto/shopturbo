@@ -15,7 +15,7 @@ export default function IntegrateApiShopee() {
   const [successfulRequest, setSuccessfulRequest] = useState(false);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const { shop, _setShop } = useShop();
+  const { shop, setShop } = useShop();
 
   async function handleIntegrateApiShopee() {
     setLoading(true);
@@ -29,7 +29,7 @@ export default function IntegrateApiShopee() {
         console.error('Ocorreu um erro na solicitação da url de autorização.');
 
         return setFeedbackMessage(
-          'Ocorreu um erro na solicitação da url de autorização! Tente novamente mais tarde...'
+          'Ocorreu um erro na solicitação da url de autorização! Tente novamente mais tarde...',
         );
       }
 
@@ -40,13 +40,13 @@ export default function IntegrateApiShopee() {
     } catch (err) {
       console.error(
         'Ocorreu um erro na solicitação da url de autorização: ',
-        err.message
+        err.message,
       );
 
       setSuccessfulRequest(false);
 
       return setFeedbackMessage(
-        'Ocorreu um erro inesperado! Tente novamente mais tarde...'
+        'Ocorreu um erro inesperado! Tente novamente mais tarde...',
       );
     } finally {
       setLoading(false);
@@ -72,7 +72,7 @@ export default function IntegrateApiShopee() {
                 A autorização é válida exatamente até:{' '}
                 <span className="text-[--primary_color]">
                   {new Date(Number(shop.expire_time) * 1000).toLocaleDateString(
-                    'pt-BR'
+                    'pt-BR',
                   )}
                 </span>
                 .{' '}

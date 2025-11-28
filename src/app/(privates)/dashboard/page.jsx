@@ -54,8 +54,7 @@ export default function Dashboard() {
         <Nav />
         <Main>
           <p className="text-gray-400 text-center">
-            Você ainda não conectou o ShopTurbo à Shopee. Quando você autorizar
-            nosso sistema, os dados da sua loja aparecerão aqui.
+            Você ainda não conectou o ShopTurbo à Shopee. Quando você autorizar nosso sistema, os dados da sua loja aparecerão aqui.
           </p>
         </Main>
       </section>
@@ -67,25 +66,17 @@ export default function Dashboard() {
       <Nav />
       <Main>
         <div>
-          {loading && <IsLoading width="w-[340px]" />}
+          {loading && <IsLoading width="w-80" />}
 
           {!loading && !shop && (
             <p className="text-gray-400 text-center">
-              Você ainda não conectou o ShopTurbo à Shopee. Quando você
-              autorizar nosso sistema, os dados da sua loja aparecerão aqui.
+              Você ainda não conectou o ShopTurbo à Shopee. Quando você autorizar nosso sistema, os dados da sua loja aparecerão aqui.
             </p>
           )}
 
-          {shop?.expire_time && (
-            <p className="text-xl mb-4">
-              A autorização do ShopTurbo expira em: {expireIn}.
-            </p>
-          )}
+          {shop?.expire_time && <p className="text-xl mb-4">A autorização do ShopTurbo expira em: {expireIn}.</p>}
 
-          <p className="text-xl mb-4">
-            - Colocar talvez os produtos mais vendidos aqui, foto perfil da loja
-            etc...
-          </p>
+          <p className="text-xl mb-4">- Colocar talvez os produtos mais vendidos aqui, foto perfil da loja etc...</p>
         </div>
       </Main>
     </section>

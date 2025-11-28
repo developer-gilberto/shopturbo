@@ -31,20 +31,12 @@ export default function Orders() {
       return alert('⚠️ DIGITE SOMENTE NÚMEROS!');
     }
     setGovernmentTaxes(inputGovernmentTaxes);
-    // setTotalGovernmentTaxes(totalGovernmentTaxes);
-    // setTotalShopeeCommission(totalShopeeCommission);
-    // setTotalCostPrice(totalCostPrice);
-    // setTotalProfit(totalProfit);
   }
 
-  // useEffect(() => {
+  // PRECISO FAZER DUAS REQUESTS. UMA PARA SHOPEE E OUTRA PARA SHOPTURBO. NA SHOPEE EU PEGO OS PEDIDOS E NO SHOPTURBO EU PEGO O PRECO DE CUSTO E IMPOSTO QUE O USUARIO COLOCOU EM /PRODUCTS
+
   async function fetchOrders() {
     const orderStatus = inputOrderStatus;
-    console.log(orderStatus);
-    // if (orders && orders.length > 0) {
-    //     setLoading(false);
-    //     return;
-    // }
 
     try {
       setLoading(true);
@@ -52,47 +44,10 @@ export default function Orders() {
       // "UNPAID", "READY_TO_SHIP", "PROCESSED", "SHIPPED", "COMPLETED", "IN_CANCEL", "CANCELLED", "INVOICE_PENDING"
       // "NÃO PAGO", "PRONTO_PARA_ENVIO", "PROCESSADO", "ENVIADO", "CONCLUÍDO", "CANCELADO", "CANCELADO", "FATURA_PENDENTE"
 
-      const response = await fetchOrdersIdList(orderStatus); // passar o status como parametro(posso pegar todos os status chamando fetchOrdersIdList() varias vezes com PromiseAll passando um status em cada promise)
+      const response = await fetchOrdersIdList(orderStatus); // passar o status como parametro(talvez pegar todos os status chamando fetchOrdersIdList() varias vezes com PromiseAll passando um status em cada promise)
 
       setInputOrderStatus('');
       setNumberOfOrdersFound(response.data.order_list.length);
-
-      // const response = await Promise.all([
-      //     fetchOrdersIdList('UNPAID'),
-      //     fetchOrdersIdList('READY_TO_SHIP'),
-      //     fetchOrdersIdList('PROCESSED'),
-      //     fetchOrdersIdList('SHIPPED'),
-      //     fetchOrdersIdList('COMPLETED'),
-      //     fetchOrdersIdList('IN_CANCEL'),
-      //     fetchOrdersIdList('CANCELLED'),
-      //     fetchOrdersIdList('INVOICE_PENDING'),
-      // ]);
-
-      // .then((values) => {
-      //     console.log(values); // Expected output: [3, 42, "foo"]
-
-      //     values
-      // })
-      // .catch((error) => {
-      //     console.error('One of the promises failed:', error);
-      // });
-      // console.log('response ', response);
-
-      // if (response.includes({ status: !200 })) {
-      //     console.log(response);
-      //     return;
-      // }
-
-      // const ordersList = response.filter(
-      //     (ordersList) => ordersList.data.order_list.length > 0
-      // );
-
-      // console.log('ordersList ', ordersList);
-
-      // // console.log('resultado PromiseAll: ', ordersList);
-      // ordersList.filter(order => order.data.order_list)
-
-      console.log('response ', response);
 
       if (response.status !== 200) {
         console.log(response);
@@ -100,13 +55,8 @@ export default function Orders() {
       }
 
       const ordersIdList = response.data.order_list.map(
-        // .data.order_list
-        (order) => order.order_sn
+        (order) => order.order_sn,
       );
-
-      console.log('ordersIdList ', ordersIdList);
-
-      // return;
 
       const ordersData = await fetchOrdersDetails(ordersIdList);
 
@@ -139,24 +89,22 @@ export default function Orders() {
 
       setOrders(ordersDetails);
 
-      console.log('ordersDetails: ', ordersDetails);
-
       const totalValueOrdersWithShipping = ordersDetails.reduce(
         (acc, orders) => {
           const totalOrder = orders.item_list.reduce(
             (sum, item) =>
               sum + item.model_original_price * item.model_quantity_purchased,
-            0
+            0,
           );
           return acc + totalOrder;
         },
-        0
+        0,
       );
 
       const totalQuantityPurchased = ordersDetails.reduce((acc, order) => {
         const totalOrder = order.item_list.reduce(
           (sum, item) => sum + item.model_quantity_purchased,
-          0
+          0,
         );
         return acc + totalOrder;
       }, 0);
@@ -168,69 +116,30 @@ export default function Orders() {
             (Number(item.model_original_price) -
               Number(item.model_discounted_price)) *
               Number(item.model_quantity_purchased),
-          0
+          0,
         );
         return totalCommission;
       }, 0);
       const inputCostPrice = 1000;
-      // // const inputGovernmentTaxes = 10;
-
-      // const sellingPrice = Number(item.model_original_price);
-
-      // const sellingPriceWithShopeeFee = Number(
-      //     item.model_discounted_price
-      // );
-
-      // const shopeeCommission =
-      //     sellingPrice - sellingPriceWithShopeeFee;
-
-      // const shipping = Number(
-      //     order.actual_shipping_fee || order.estimated_shipping_fee
-      // );
-
-      // const totalAmountWithShipping = Number(
-      //     item.model_original_price
-      // );
-
-      // const quantityPurchased = item.model_quantity_purchased;
-
-      // const orderItemQuantityValue = sellingPrice * quantityPurchased;
-
-      // const orderValue = totalAmountWithShipping * quantityPurchased;
 
       const totalGovernmentTaxes =
         totalValueOrdersWithShipping * (governmentTaxes / 100);
 
-      // const costPrice = inputCostPrice * quantityPurchased; // tem que ser manual (criar tabela no db para salvar o costPrice e puchar do meu backend)
       const totalCostPrice =
         inputCostPrice * totalQuantityPurchased +
         totalGovernmentTaxes +
         totalShopeeCommission;
 
-      // const totalValueOrders = ordersDetails.reduce((acc, orders) => {
-      //     const totalOrder = orders.item_list.reduce(
-      //         (sum, item) =>
-      //             sum +
-      //             (Number(item.model_original_price) -
-      //                 Number(totalCostPrice)) *
-      //                 item.model_quantity_purchased,
-      //         0
-      //     );
-      //     return acc + totalOrder;
-      // }, 0);
       const totalValueOrders = ordersDetails.reduce((acc, orders) => {
         const totalOrder = orders.item_list.reduce(
           (sum, item) =>
             sum +
             Number(item.model_original_price) *
               Number(item.model_quantity_purchased),
-          0
+          0,
         );
         return acc + totalOrder;
       }, 0);
-
-      // const totalCost =
-      //     costPrice + totalGovernmentTaxes + shopeeCommission;
 
       const totalProfit = totalValueOrders - totalCostPrice;
 
@@ -238,7 +147,6 @@ export default function Orders() {
       setTotalShopeeCommission(totalShopeeCommission);
       setTotalCostPrice(totalCostPrice);
       setTotalProfit(totalProfit);
-      // setOrders(ordersDetails);
     } catch (err) {
       console.error('[ ERROR ]: ', err);
     } finally {
@@ -246,8 +154,19 @@ export default function Orders() {
     }
   }
 
-  // fetchOrders();
-  // }, [orders]);
+  if (!shop) {
+    return (
+      <section className=" w-full min-h-screen flex">
+        <Nav />
+        <Main>
+          <p className="text-gray-400 text-center">
+            Você ainda não conectou o ShopTurbo à Shopee. Quando você autorizar
+            nosso sistema, os pedidos da sua loja aparecerão aqui.
+          </p>
+        </Main>
+      </section>
+    );
+  }
 
   return (
     <section className=" w-full min-h-screen flex">
@@ -278,18 +197,12 @@ export default function Orders() {
               {numberOfOrdersFound} produtos encontrados.
             </div>
 
-            {shop && orders.length > 0 ? (
+            {shop && orders.length > 0 && (
               <div>
                 <div className="text-xl font-bold my-4">
                   Pedidos {`${inputOrderStatus.length} ${inputOrderStatus}`}:
                 </div>
               </div>
-            ) : (
-              <p>
-                Você ainda não conectou o ShopTurbo à Shopee. Quando você
-                autorizar nosso sistema, os produtos da sua loja aparecerão
-                aqui.
-              </p>
             )}
 
             {loading && <IsLoading width="w-[340px]" />}
@@ -360,23 +273,22 @@ export default function Orders() {
                     }
 
                     const inputCostPrice = 1000;
-                    // const inputGovernmentTaxes = 10;
 
                     const sellingPrice = Number(item.model_original_price);
 
                     const sellingPriceWithShopeeFee = Number(
-                      item.model_discounted_price
+                      item.model_discounted_price,
                     );
 
                     const shopeeCommission =
                       sellingPrice - sellingPriceWithShopeeFee;
 
                     const shipping = Number(
-                      order.actual_shipping_fee || order.estimated_shipping_fee
+                      order.actual_shipping_fee || order.estimated_shipping_fee,
                     );
 
                     const totalAmountWithShipping = Number(
-                      item.model_original_price
+                      item.model_original_price,
                     );
 
                     const quantityPurchased = item.model_quantity_purchased;
@@ -387,7 +299,7 @@ export default function Orders() {
                     const orderValue =
                       totalAmountWithShipping * quantityPurchased;
 
-                    const costPrice = inputCostPrice * quantityPurchased; // tem que ser manual (criar tabela no db para salvar o costPrice e puchar do meu backend)
+                    const costPrice = inputCostPrice * quantityPurchased;
 
                     const totalGovernmentTaxes =
                       orderValue * (governmentTaxes / 100);
@@ -406,14 +318,14 @@ export default function Orders() {
                         <td className="border border-[--bg_3] p-2">
                           <div>
                             {/* <img
-                                                                className="w-8 h-8 object-cover rounded"
-                                                                src={
-                                                                    item.image_url
-                                                                }
-                                                                alt={
-                                                                    item.item_name
-                                                                }
-                                                            /> */}
+                                    className="w-8 h-8 object-cover rounded"
+                                    src={
+                                        item.image_url
+                                    }
+                                    alt={
+                                        item.item_name
+                                    }
+                                /> */}
                             <div className="flex flex-col justify-between items-start gap-1 text-gray-100 uppercase">
                               <span className="font-medium">
                                 {item.item_name}
@@ -512,9 +424,7 @@ export default function Orders() {
 
                         {/* Lucro */}
                         <td
-                          className={`border border-[--bg_3] p-2 font-bold ${
-                            profit >= 0 ? 'text-green-500' : 'text-red-600'
-                          }`}
+                          className={`border border-[--bg_3] p-2 font-bold ${profit >= 0 ? 'text-green-500' : 'text-red-600'}`}
                         >
                           {profit.toLocaleString('pt-BR', {
                             style: 'currency',
@@ -523,7 +433,7 @@ export default function Orders() {
                         </td>
                       </tr>
                     );
-                  })
+                  }),
                 )}
               </tbody>
 
@@ -547,7 +457,7 @@ export default function Orders() {
                       {orders.reduce((acc, order) => {
                         const totalOrder = order.item_list.reduce(
                           (sum, item) => sum + item.model_quantity_purchased,
-                          0
+                          0,
                         );
                         return acc + totalOrder;
                       }, 0)}
@@ -562,10 +472,10 @@ export default function Orders() {
                               sum +
                               item.model_original_price *
                                 item.model_quantity_purchased,
-                            0
+                            0,
                           );
                           return acc + totalOrder;
-                        }, 0)
+                        }, 0),
                       ).toLocaleString('pt-BR', {
                         style: 'currency',
                         currency: 'BRL',
@@ -577,17 +487,7 @@ export default function Orders() {
 
                     {/* Total impostos */}
                     <th className="py-4 px-2 border border-[--bg_3] text-yellow-300">
-                      {/* const totalGovernmentTaxes = totalValueOrdersWithShipping * (governmentTaxes / 100); */}
-                      {Number(
-                        totalGovernmentTaxes
-                        // orders.reduce(
-                        //     (acc, order) =>
-                        //         acc +
-                        //         order.total_amount,
-                        //     0
-                        // ) *
-                        //     (governmentTaxes / 100)
-                      ).toLocaleString('pt-BR', {
+                      {Number(totalGovernmentTaxes).toLocaleString('pt-BR', {
                         style: 'currency',
                         currency: 'BRL',
                       })}
@@ -602,20 +502,7 @@ export default function Orders() {
                     </th>
 
                     {/* Total frete */}
-                    <th className="py-4 px-2 border border-[--bg_3]">
-                      ***
-                      {/* {Number(
-                                                    orders.reduce(
-                                                        (acc, order) =>
-                                                            acc +
-                                                            order.actual_shipping_fee,
-                                                        0
-                                                    )
-                                                ).toLocaleString('pt-BR', {
-                                                    style: 'currency',
-                                                    currency: 'BRL',
-                                                })} */}
-                    </th>
+                    <th className="py-4 px-2 border border-[--bg_3]">***</th>
 
                     {/* Total custos pedidos */}
                     <th className="py-4 px-2 border border-[--bg_3] text-orange-400">

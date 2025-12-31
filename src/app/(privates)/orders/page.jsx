@@ -1,20 +1,27 @@
-'use client';
+"use client";
 
-import { fetchOrdersDetails } from '@/api/orders/fetchOrdersDetails';
-import { fetchOrdersIdList } from '@/api/orders/fetchOrdersIdList';
-import { Main } from '@/components/layout/main';
-import { Nav } from '@/components/layout/nav';
-import { Button } from '@/components/ui/btn';
-import { IsLoading } from '@/components/ui/isLoading';
-import { useOrder } from '@/context/orderContext';
-import { useShop } from '@/context/shopContext';
-import { useState } from 'react';
-import { FaRegEdit } from 'react-icons/fa';
-import { RxCopy } from 'react-icons/rx';
+import { fetchOrdersDetails } from "@/api/orders/fetchOrdersDetails";
+import { fetchOrdersIdList } from "@/api/orders/fetchOrdersIdList";
+import { fetchProductsShopturbo } from "@/api/products/productsShopturbo/fetchProductsShopturbo";
+import { fetchShopProfile } from "@/api/shop/fetchShopProfile";
+import { Main } from "@/components/layout/main";
+import { Nav } from "@/components/layout/nav";
+import { Button } from "@/components/ui/btn";
+import { CopyButton } from "@/components/ui/copyButton";
+import { IsLoading } from "@/components/ui/isLoading";
+import { TableBody } from "@/components/ui/tables/orders/tableBody";
+import { TableHead } from "@/components/ui/tables/orders/tableHead";
+import { TableHeader } from "@/components/ui/tables/orders/tableHeader";
+import { TableOrders } from "@/components/ui/tables/orders/tableOrders";
+import { TableRow } from "@/components/ui/tables/orders/tableRow";
+import { useOrder } from "@/context/orderContext";
+import { useProducts } from "@/context/productContext";
+import { useShop } from "@/context/shopContext";
+import { useEffect, useRef, useState } from "react";
 
 export default function Orders() {
   const [loading, setLoading] = useState(false);
-  const [inputOrderStatus, setInputOrderStatus] = useState('');
+  const [inputOrderStatus, setInputOrderStatus] = useState("");
   const [governmentTaxes, setGovernmentTaxes] = useState(10);
   const [totalGovernmentTaxes, setTotalGovernmentTaxes] = useState(0);
   const [totalShopeeCommission, setTotalShopeeCommission] = useState(0);
@@ -23,17 +30,41 @@ export default function Orders() {
   const [numberOfOrdersFound, setNumberOfOrdersFound] = useState(0);
   const { shop, setShop } = useShop();
   const { orders, setOrders } = useOrder();
+  const { productsShopturbo, setProductsShopturbo } = useProducts();
+  const fetchedShopRef = useRef(false);
 
-  function handleInputGovernmentTaxes() {
-    const inputGovernmentTaxes = Number(prompt('Digite o valor do imposto: '));
+  useEffect(() => {
+    async function fetchShop() {
+      if (fetchedShopRef.current) return;
+      fetchedShopRef.current = true;
 
-    if (isNaN(inputGovernmentTaxes)) {
-      return alert('⚠️ DIGITE SOMENTE NÚMEROS!');
+      if (shop) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+
+        const response = await fetchShopProfile();
+
+        if (response.status !== 200) {
+          console.log(response);
+          return;
+        }
+
+        const shopData = response.data;
+
+        setShop(shopData);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     }
-    setGovernmentTaxes(inputGovernmentTaxes);
-  }
 
-  // PRECISO FAZER DUAS REQUESTS. UMA PARA SHOPEE E OUTRA PARA SHOPTURBO. NA SHOPEE EU PEGO OS PEDIDOS E NO SHOPTURBO EU PEGO O PRECO DE CUSTO E IMPOSTO QUE O USUARIO COLOCOU EM /PRODUCTS
+    fetchShop();
+  }, []);
 
   async function fetchOrders() {
     const orderStatus = inputOrderStatus;
@@ -44,10 +75,9 @@ export default function Orders() {
       // "UNPAID", "READY_TO_SHIP", "PROCESSED", "SHIPPED", "COMPLETED", "IN_CANCEL", "CANCELLED", "INVOICE_PENDING"
       // "NÃO PAGO", "PRONTO_PARA_ENVIO", "PROCESSADO", "ENVIADO", "CONCLUÍDO", "CANCELADO", "CANCELADO", "FATURA_PENDENTE"
 
-      const response = await fetchOrdersIdList(orderStatus); // passar o status como parametro(talvez pegar todos os status chamando fetchOrdersIdList() varias vezes com PromiseAll passando um status em cada promise)
+      const response = await fetchOrdersIdList(orderStatus);
 
-      setInputOrderStatus('');
-      setNumberOfOrdersFound(response.data.order_list.length);
+      setNumberOfOrdersFound(response.data?.order_list.length);
 
       if (response.status !== 200) {
         console.log(response);
@@ -58,9 +88,16 @@ export default function Orders() {
         (order) => order.order_sn,
       );
 
-      const ordersData = await fetchOrdersDetails(ordersIdList);
+      const [ordersData, products] = await Promise.all([
+        fetchOrdersDetails(ordersIdList),
+        fetchProductsShopturbo(0, 100), // ESTOU BUSCANDO PRODUTOS ALEATORIOS. DEVO BUSCAR OS PRODUTOS QUE ESTAO NAS ORDERS QUE O USUARIO ESTA BUSCANDO
+      ]);
 
-      if (ordersData.status !== 200) return;
+      if (ordersData.status !== 200) {
+        setInputOrderStatus("");
+        return setOrders([]);
+      }
+      if (products.status !== 200) return;
 
       const ordersDetails = ordersData.data.order_list.map((order) => ({
         order_sn: order.order_sn,
@@ -88,6 +125,7 @@ export default function Orders() {
       }));
 
       setOrders(ordersDetails);
+      setProductsShopturbo(products.data);
 
       const totalValueOrdersWithShipping = ordersDetails.reduce(
         (acc, orders) => {
@@ -101,18 +139,10 @@ export default function Orders() {
         0,
       );
 
-      const totalQuantityPurchased = ordersDetails.reduce((acc, order) => {
-        const totalOrder = order.item_list.reduce(
-          (sum, item) => sum + item.model_quantity_purchased,
-          0,
-        );
-        return acc + totalOrder;
-      }, 0);
-
       const totalShopeeCommission = ordersDetails.reduce((_acc, order) => {
         const totalCommission = order.item_list.reduce(
-          (sum, item) =>
-            sum +
+          (acc, item) =>
+            acc +
             (Number(item.model_original_price) -
               Number(item.model_discounted_price)) *
               Number(item.model_quantity_purchased),
@@ -120,35 +150,44 @@ export default function Orders() {
         );
         return totalCommission;
       }, 0);
-      const inputCostPrice = 1000;
+
+      const totalCostPrice = ordersDetails.reduce((acc1, order) => {
+        const orderCost = order.item_list.reduce((acc2, item) => {
+          const product = products.data.find(
+            (product) => product.id === item.item_id,
+          );
+          const costPrice = product ? product.costPrice : 0;
+          return acc2 + costPrice * item.model_quantity_purchased;
+        }, 0);
+        return acc1 + orderCost;
+      }, 0);
 
       const totalGovernmentTaxes =
         totalValueOrdersWithShipping * (governmentTaxes / 100);
 
-      const totalCostPrice =
-        inputCostPrice * totalQuantityPurchased +
-        totalGovernmentTaxes +
-        totalShopeeCommission;
+      const totalCostPriceWithTaxesAndCommission =
+        totalCostPrice + totalGovernmentTaxes + totalShopeeCommission;
 
-      const totalValueOrders = ordersDetails.reduce((acc, orders) => {
+      const totalValueOrders = ordersDetails.reduce((acc1, orders) => {
         const totalOrder = orders.item_list.reduce(
-          (sum, item) =>
-            sum +
+          (acc2, item) =>
+            acc2 +
             Number(item.model_original_price) *
               Number(item.model_quantity_purchased),
           0,
         );
-        return acc + totalOrder;
+        return acc1 + totalOrder;
       }, 0);
 
-      const totalProfit = totalValueOrders - totalCostPrice;
+      const totalProfit =
+        totalValueOrders - totalCostPriceWithTaxesAndCommission;
 
       setTotalGovernmentTaxes(totalGovernmentTaxes);
       setTotalShopeeCommission(totalShopeeCommission);
-      setTotalCostPrice(totalCostPrice);
+      setTotalCostPrice(totalCostPriceWithTaxesAndCommission);
       setTotalProfit(totalProfit);
     } catch (err) {
-      console.error('[ ERROR ]: ', err);
+      console.error("[ ERROR ]: ", err);
     } finally {
       setLoading(false);
     }
@@ -180,27 +219,28 @@ export default function Orders() {
                 value={inputOrderStatus}
                 onChange={(e) => setInputOrderStatus(e.target.value)}
               >
-                {/* "UNPAID", "READY_TO_SHIP", "PROCESSED", "SHIPPED", "COMPLETED", "IN_CANCEL", "CANCELLED", "INVOICE_PENDING" */}
                 <option value="" disabled>
                   Buscar pedidos
                 </option>
-                <option value="UNPAID">NÃO PAGO</option>
-                <option value="READY_TO_SHIP">PRONTO PARA ENVIO</option>
-                <option value="PROCESSED">PROCESSADO</option>
-                <option value="SHIPPED">ENVIADO</option>
-                <option value="COMPLETED">CONCLUÍDO</option>
+                <option value="UNPAID">AGUARDANDO PAGAMENTO</option>
+                <option value="READY_TO_SHIP">PRONTOS PARA ENVIO</option>
+                <option value="PROCESSED">PROCESSADOS</option>
+                <option value="SHIPPED">ENVIADOS</option>
+                <option value="COMPLETED">CONCLUÍDOS</option>
                 <option value="IN_CANCEL">EM CANCELAMENTO</option>
-                <option value="CANCELLED">CANCELADO</option>
+                <option value="CANCELLED">CANCELADOS</option>
                 <option value="INVOICE_PENDING">FATURA PENDENTE</option>
               </select>
               <Button onClick={fetchOrders}>Buscar</Button>
-              {numberOfOrdersFound} produtos encontrados.
             </div>
 
-            {shop && orders.length > 0 && (
+            {shop && orders.length >= 0 && (
               <div>
                 <div className="text-xl font-bold my-4">
-                  Pedidos {`${inputOrderStatus.length} ${inputOrderStatus}`}:
+                  <p>
+                    {!numberOfOrdersFound &&
+                      "Nenhum pedido encontrado para essa busca."}
+                  </p>
                 </div>
               </div>
             )}
@@ -208,7 +248,7 @@ export default function Orders() {
             {loading && <IsLoading width="w-[340px]" />}
           </section>
 
-          <section className="max-h-dvh overflow-y-auto rounded-md border border-[--bg_5]">
+          <section className="max-h-dvh overflow-y-auto rounded-md border border-[--bg_5] my-4">
             <table className="min-w-full text-center border-collapse">
               <thead className="sticky top-0 z-10 bg-[--bg_4] text-gray-400">
                 <tr>
@@ -221,10 +261,6 @@ export default function Orders() {
                   <th className="p-2">
                     <span className="flex justify-center items-center gap-2">
                       Imposto %
-                      <FaRegEdit
-                        className="text-xl text-gray-300 hover:text-[--bg_2] hover:cursor-pointer"
-                        onClick={handleInputGovernmentTaxes}
-                      />
                     </span>
                   </th>
                   <th className="p-2">Tarifa Shopee</th>
@@ -239,40 +275,29 @@ export default function Orders() {
                 {orders.map((order) =>
                   order.item_list.map((item, index) => {
                     function getOrderStatus(status) {
-                      switch (status) {
-                        case 'UNPAID':
-                          return 'Aguardando pagamento';
+                      const statusMap = {
+                        UNPAID: "Aguardando pagamento",
+                        READY_TO_SHIP: "Pronto para envio",
+                        PROCESSED: "Processado",
+                        SHIPPED: "Enviado",
+                        COMPLETED: "Concluído",
+                        IN_CANCEL: "Em cancelamento",
+                        CANCELLED: "Cancelado",
+                        INVOICE_PENDING: "Fatura pendente",
+                        TO_CONFIRM_RECEIVE:
+                          "Aguardando cliente confirmar recebimento",
+                      };
 
-                        case 'READY_TO_SHIP':
-                          return 'Pronto para envio';
-
-                        case 'PROCESSED':
-                          return 'Processado';
-
-                        case 'SHIPPED':
-                          return 'Enviado';
-
-                        case 'COMPLETED':
-                          return 'Concluído';
-
-                        case 'IN_CANCEL':
-                          return 'Em cancelamento';
-
-                        case 'CANCELLED':
-                          return 'Cancelado';
-
-                        case 'INVOICE_PENDING':
-                          return 'Fatura pendente';
-
-                        case 'TO_CONFIRM_RECEIVE':
-                          return 'Enviado! Aguardando comprador confirmar recebimento';
-
-                        default:
-                          return 'Desconhecido';
-                      }
+                      return statusMap[status] ?? "Status desconhecido";
                     }
 
-                    const inputCostPrice = 1000;
+                    const currentOrderProduct = productsShopturbo.find(
+                      (product) => product.id === item.item_id,
+                    );
+
+                    const inputCostPrice = currentOrderProduct
+                      ? currentOrderProduct.costPrice
+                      : 0;
 
                     const sellingPrice = Number(item.model_original_price);
 
@@ -331,22 +356,25 @@ export default function Orders() {
                                 {item.item_name}
                               </span>
 
-                              <span className="text-xs text-gray-400">
-                                ID produto: {item.item_id}
+                              <span className="text-xs text-gray-400 flex justify-start items-center gap-1">
+                                <span className="flex justify-start items-center">
+                                  ID produto: {item.item_id}
+                                </span>
+                                <CopyButton text={item.item_id} />
                               </span>
 
                               <span className="text-xs text-gray-400 flex justify-start items-center gap-1">
                                 <span className="flex justify-start items-center">
                                   SKU: {item.item_sku}
                                 </span>
-                                <RxCopy className="text-xl text-gray-300 hover:text-[--bg_2] hover:cursor-pointer" />
+                                <CopyButton text={item.item_sku} />
                               </span>
 
                               <span className="text-xs text-gray-400 flex justify-start items-center gap-1">
                                 <span className="flex justify-start items-center">
                                   ID Venda: {order.order_sn}
                                 </span>
-                                <RxCopy className="text-xl text-gray-300 hover:text-[--bg_2] hover:cursor-pointer" />
+                                <CopyButton text={order.order_sn} />
                               </span>
                             </div>
                           </div>
@@ -359,9 +387,9 @@ export default function Orders() {
 
                         {/* Preço de venda */}
                         <td className="border border-[--bg_3] p-2">
-                          {sellingPrice.toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
+                          {sellingPrice.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
                           })}
                         </td>
 
@@ -372,63 +400,64 @@ export default function Orders() {
 
                         {/* Valor total pedido */}
                         <td className="border border-[--bg_3] p-2 text-blue-400">
-                          {orderItemQuantityValue.toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
+                          {orderItemQuantityValue.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
                           })}
                         </td>
 
                         {/* Preço de custo */}
                         <td className="border border-[--bg_3] p-2 text-yellow-300">
-                          {inputCostPrice.toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
-                          })}
-                          <FaRegEdit className="inline ml-2 text-gray-300 hover:text-[--bg_2] hover:cursor-pointer" />
+                          {currentOrderProduct?.costPrice
+                            ? inputCostPrice.toLocaleString("pt-BR", {
+                                style: "currency",
+                                currency: "BRL",
+                              })
+                            : "⚠️ Não informado"}
                         </td>
 
                         {/* Imposto */}
                         <td className="border border-[--bg_3] p-2">
                           {governmentTaxes}%
                           <div className="p-2 text-yellow-300">
-                            {totalGovernmentTaxes.toLocaleString('pt-BR', {
-                              style: 'currency',
-                              currency: 'BRL',
+                            {totalGovernmentTaxes.toLocaleString("pt-BR", {
+                              style: "currency",
+                              currency: "BRL",
                             })}
                           </div>
                         </td>
 
                         {/* Comissão Shopee */}
                         <td className="border border-[--bg_3] p-2 text-yellow-300">
-                          {shopeeCommission.toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
+                          {shopeeCommission.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
                           })}
                         </td>
 
                         {/* Frete */}
                         <td className="border border-[--bg_3] p-2">
-                          {shipping.toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
+                          {shipping.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
                           })}
                         </td>
 
                         {/* Total de custos */}
                         <td className="border border-[--bg_3] p-2 text-orange-400">
-                          {totalCost.toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
+                          {totalCost.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
                           })}
                         </td>
 
                         {/* Lucro */}
                         <td
-                          className={`border border-[--bg_3] p-2 font-bold ${profit >= 0 ? 'text-green-500' : 'text-red-600'}`}
+                          className={`border border-[--bg_3] p-2 font-bold ${profit >= 0 ? "text-green-500" : "text-red-600"}`}
                         >
-                          {profit.toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
+                          {profit.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
                           })}
                         </td>
                       </tr>
@@ -454,31 +483,31 @@ export default function Orders() {
 
                     {/* Qtd. produtos vendidos */}
                     <th className="py-4 px-2 border border-[--bg_3]">
-                      {orders.reduce((acc, order) => {
+                      {orders.reduce((acc1, order) => {
                         const totalOrder = order.item_list.reduce(
-                          (sum, item) => sum + item.model_quantity_purchased,
+                          (acc2, item) => acc2 + item.model_quantity_purchased,
                           0,
                         );
-                        return acc + totalOrder;
+                        return acc1 + totalOrder;
                       }, 0)}
                     </th>
 
                     {/* Total vendas */}
                     <th className="py-4 px-2 border border-[--bg_3] text-blue-400">
                       {Number(
-                        orders.reduce((acc, orders) => {
+                        orders.reduce((acc1, orders) => {
                           const totalOrder = orders.item_list.reduce(
-                            (sum, item) =>
-                              sum +
+                            (acc2, item) =>
+                              acc2 +
                               item.model_original_price *
                                 item.model_quantity_purchased,
                             0,
                           );
-                          return acc + totalOrder;
+                          return acc1 + totalOrder;
                         }, 0),
-                      ).toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
+                      ).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
                       })}
                     </th>
 
@@ -487,17 +516,17 @@ export default function Orders() {
 
                     {/* Total impostos */}
                     <th className="py-4 px-2 border border-[--bg_3] text-yellow-300">
-                      {Number(totalGovernmentTaxes).toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
+                      {Number(totalGovernmentTaxes).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
                       })}
                     </th>
 
                     {/* Total comissao shopee */}
                     <th className="py-4 px-2 border border-[--bg_3] text-yellow-300">
-                      {Number(totalShopeeCommission).toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
+                      {Number(totalShopeeCommission).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
                       })}
                     </th>
 
@@ -506,17 +535,17 @@ export default function Orders() {
 
                     {/* Total custos pedidos */}
                     <th className="py-4 px-2 border border-[--bg_3] text-orange-400">
-                      {Number(totalCostPrice).toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
+                      {Number(totalCostPrice).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
                       })}
                     </th>
 
                     {/* Total lucros */}
                     <th className="py-4 px-2 border border-[--bg_3] text-green-400 font-extrabold">
-                      {Number(totalProfit).toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
+                      {Number(totalProfit).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
                       })}
                     </th>
                   </tr>

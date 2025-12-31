@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useShop } from '@/context/shopContext';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useState } from 'react';
-import { FaUser } from 'react-icons/fa';
-import { IsLoading } from '../ui/isLoading';
-import { Logo } from '../ui/logo';
+import { useShop } from "@/context/shopContext";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+import { FaUser } from "react-icons/fa";
+import { IsLoading } from "../ui/isLoading";
+import { Logo } from "../ui/logo";
 
 export function Header() {
   const { shop, setShop } = useShop();
@@ -26,7 +26,7 @@ export function Header() {
 
       {shop && (
         <div className="flex justify-center items-center gap-4 text-xl">
-          Bem vindo ao ShopTurbo 🚀{' '}
+          Bem vindo ao ShopTurbo 🚀{" "}
           <span className="text-[--primary_color] text-2xl">
             {shop.shop_name}
           </span>
@@ -38,9 +38,9 @@ export function Header() {
           href="/my-account"
           className="hover:border-[--bg_3] hover:cursor-pointer rounded-full"
         >
-          {shop && shop.shop_logo ? (
+          {shop && shop.profile ? (
             <Image
-              src={shop.shop_logo}
+              src={shop.profile.shop_logo}
               alt="Loja"
               width={48}
               height={48}

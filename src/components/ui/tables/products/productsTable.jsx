@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import { fetchProductsShopee } from '@/api/products/productsShopee/fetchProductsShopee';
-import { fetchProductsShopturbo } from '@/api/products/productsShopturbo/fetchProductsShopturbo';
-import { fetchShopProfile } from '@/api/shop/fetchShopProfile';
-import { useProducts } from '@/context/productContext';
-import { useProductPagination } from '@/context/productionPaginationContext';
-import { useShop } from '@/context/shopContext';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
-import { IsLoading } from '../../isLoading';
-import { Column } from './column';
-import { ProductImage } from './productImage';
-import { TableData } from './tableData';
-import { TableHeader } from './tableHeader';
-import { CopyButton } from '../../copyButton';
-import { EditCostPriceButton } from '../../editCostPriceButton';
-import { EditGovernmentTaxesButton } from '../../editGovernmentTaxesButton';
-import { SaveChangesButton } from '../../saveChangesButton';
-import { DiscardChangesButton } from '../../discardChangesButton';
+import { fetchProductsShopee } from "@/api/products/productsShopee/fetchProductsShopee";
+import { fetchProductsShopturbo } from "@/api/products/productsShopturbo/fetchProductsShopturbo";
+import { fetchShopProfile } from "@/api/shop/fetchShopProfile";
+import { useProducts } from "@/context/productContext";
+import { useProductPagination } from "@/context/productionPaginationContext";
+import { useShop } from "@/context/shopContext";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { IsLoading } from "../../isLoading";
+import { Column } from "./column";
+import { ProductImage } from "./productImage";
+import { TableData } from "./tableData";
+import { TableHeader } from "./tableHeader";
+import { CopyButton } from "../../copyButton";
+import { EditCostPriceButton } from "../../editCostPriceButton";
+import { EditGovernmentTaxesButton } from "../../editGovernmentTaxesButton";
+import { SaveChangesButton } from "../../saveChangesButton";
+import { DiscardChangesButton } from "../../discardChangesButton";
 
 export function ProductsTable() {
   const [loading, setLoading] = useState(false);
@@ -68,7 +68,7 @@ export function ProductsTable() {
     setHasNextPageShopturbo(true);
     setHasNextPageShopee(true);
 
-    const page = searchParams.get('page');
+    const page = searchParams.get("page");
 
     if (page == 1) {
       setCurrentPage(1);
@@ -84,7 +84,7 @@ export function ProductsTable() {
   async function handleNextPage() {
     setHasPreviousPage(true);
 
-    const page = searchParams.get('page');
+    const page = searchParams.get("page");
 
     if (page >= totalNumbersPages) {
       setCurrentPage(totalNumbersPages);
@@ -118,7 +118,7 @@ export function ProductsTable() {
           responseShopturbo?.data.length == 0 &&
           responseShopee?.products.length == 0
         ) {
-          alert('Nenhum produto encontrado.');
+          alert("Nenhum produto encontrado.");
 
           router.push(`/products?page=1&page_size=${pageSizeShopee}`);
           return;
@@ -175,7 +175,7 @@ export function ProductsTable() {
         return;
       }
     } catch (err) {
-      console.error('Ocorreu um erro ao tentar buscar os produtos: ' + err);
+      console.error("Ocorreu um erro ao tentar buscar os produtos: " + err);
     } finally {
       setLoading(false);
     }
@@ -217,7 +217,7 @@ export function ProductsTable() {
   useEffect(() => {
     if (!shop) return;
 
-    const page = searchParams.get('page');
+    const page = searchParams.get("page");
 
     if (page == 1 || !page) {
       setCurrentPage(1);
@@ -274,7 +274,7 @@ export function ProductsTable() {
         </div>
       )}
 
-      <table className="relative min-w-full mt-4 text-center border-collapse border border-[--bg_4]">
+      <table className="relative min-w-full mt-4 text-center border-collapse">
         <TableHeader />
 
         <tbody>
@@ -331,9 +331,9 @@ export function ProductsTable() {
                   {/* Coluna Preço de venda */}
                   <Column>
                     <TableData>
-                      {Number(product.sellingPrice).toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
+                      {Number(product.sellingPrice).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
                       })}
                     </TableData>
                   </Column>
@@ -342,13 +342,13 @@ export function ProductsTable() {
                   <Column>
                     <TableData>
                       {product?.costPrice
-                        ? Number(product.costPrice).toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
+                        ? Number(product.costPrice).toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
                           })
-                        : Number(0).toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
+                        : Number(0).toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
                           })}
                       <EditCostPriceButton
                         editedProductId={product.id}
@@ -427,9 +427,9 @@ export function ProductsTable() {
                     <TableData>
                       {Number(
                         product.price_info[0].current_price,
-                      ).toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
+                      ).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
                       })}
                     </TableData>
                   </Column>
@@ -439,10 +439,10 @@ export function ProductsTable() {
                     <TableData>
                       {product?.item_cost_price ? (
                         Number(product.item_cost_price).toLocaleString(
-                          'pt-BR',
+                          "pt-BR",
                           {
-                            style: 'currency',
-                            currency: 'BRL',
+                            style: "currency",
+                            currency: "BRL",
                           },
                         )
                       ) : (
@@ -459,7 +459,7 @@ export function ProductsTable() {
                   <Column>
                     <TableData>
                       {product?.item_government_taxes ? (
-                        product.item_government_taxes + '%'
+                        product.item_government_taxes + "%"
                       ) : (
                         <div className="text-gray-400">⚠️ Não informado</div>
                       )}
@@ -482,8 +482,8 @@ export function ProductsTable() {
           className={`flex justify-center items-center gap-1 bg-[--bg_4] py-1 px-2 rounded-md hover:bg-[--bg_3] ${
             !hasPreviousPage ||
             Number(offsetShopee) - Number(pageSizeShopee) == 0
-              ? 'hover:cursor-not-allowed text-gray-600 hover:bg-[--bg_4]'
-              : 'hover:cursor-pointer'
+              ? "hover:cursor-not-allowed text-gray-600 hover:bg-[--bg_4]"
+              : "hover:cursor-pointer"
           }`}
           onClick={handleReturnFirstPageProducts}
           disabled={
@@ -499,8 +499,8 @@ export function ProductsTable() {
             className={`flex justify-center items-center gap-1 bg-[--bg_4] py-1 px-2 rounded-md hover:bg-[--bg_3] ${
               !hasPreviousPage ||
               Number(offsetShopee) - Number(pageSizeShopee) == 0
-                ? 'hover:cursor-not-allowed text-gray-600 hover:bg-[--bg_4]'
-                : 'hover:cursor-pointer'
+                ? "hover:cursor-not-allowed text-gray-600 hover:bg-[--bg_4]"
+                : "hover:cursor-pointer"
             }`}
             onClick={handlePreviousPage}
             disabled={
@@ -514,8 +514,8 @@ export function ProductsTable() {
           <button
             className={`flex justify-center items-center gap-1 bg-[--bg_4] py-1 px-2 rounded-md hover:bg-[--bg_3] ${
               !hasNextPageShopturbo && !hasNextPageShopee
-                ? 'hover:cursor-not-allowed text-gray-600 hover:bg-[--bg_4]'
-                : 'hover:cursor-pointer'
+                ? "hover:cursor-not-allowed text-gray-600 hover:bg-[--bg_4]"
+                : "hover:cursor-pointer"
             }`}
             onClick={handleNextPage}
             disabled={!hasNextPageShopturbo && !hasNextPageShopee}

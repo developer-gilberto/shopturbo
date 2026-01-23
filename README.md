@@ -372,8 +372,10 @@ Feito com muito ❤️ por **Gilberto Lopes** Full Stack Developer.
 
 ### Saiba mais sobre o desenvolvedor
 
-- [gilbertolopes.dev](https://gilbertolopes.dev)
-- [GitHub](https://github.com/developer-gilberto)
-- [Instagran](https://www.instagram.com/developer.gilberto/)
+-   Email: developer.gilberto@gmail.com
+-   [Site pessoal](https://gilbertolopes.dev)
+-   [LinkedIn](https://linkedin.com/in/gilbertolopes-dev)
+-   [GitHub](https://github.com/developer-gilberto)
+-   [Instagran](https://www.instagram.com/developer.gilberto/)
 
 **ShopTurbo** - Descomplique suas vendas na Shopee! 🚀

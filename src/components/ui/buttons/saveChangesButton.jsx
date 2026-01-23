@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { saveProducts } from "@/api/products/productsShopturbo/saveProducts";
-import { useState } from "react";
-import { useProducts } from "@/context/productContext";
-import { Button } from "./btn";
-import { IsLoading } from "./isLoading";
+import { saveProducts } from '@/api/products/productsShopturbo/saveProducts';
+import { useProducts } from '@/context/productContext';
+import { useState } from 'react';
+import { IsLoading } from '../isLoading';
+import { Button } from './btn';
 
 export function SaveChangesButton() {
     const [loading, setLoading] = useState(false);
@@ -84,7 +84,7 @@ export function SaveChangesButton() {
 
             if (response.status != 201) {
                 console.log(response?.message);
-                alert("Ocorreu um erro ao tentar salvar os dados!");
+                alert('Ocorreu um erro ao tentar salvar os dados!');
                 return;
             }
 
@@ -110,10 +110,10 @@ export function SaveChangesButton() {
             setProductsShopee(uneditedProductsFromShopee);
             setHasEditedProduct(false);
 
-            alert("Dados salvos com sucesso!");
+            alert('Dados salvos com sucesso!');
         } catch (err) {
             console.error(err);
-            alert("Erro ao tentar salvar os dados!");
+            alert('Erro ao tentar salvar os dados!');
         } finally {
             setLoading(false);
         }

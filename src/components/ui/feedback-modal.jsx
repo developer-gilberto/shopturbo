@@ -1,15 +1,16 @@
-"use client";
+'use client';
 
-import { MdError } from "react-icons/md";
-import { FaCheckCircle } from "react-icons/fa";
+import { FaCheckCircle } from 'react-icons/fa';
+import { MdError } from 'react-icons/md';
 
 export function FeedbackModal({ request, message }) {
-
     return (
-        <div className={`${ request ? "bg-green-700" : "bg-red-600" } 
-            rounded-md p-4 absolute top-8 left-1/2 -translate-x-1/2 border border-white flex justify-between items-center gap-4`}
+        <div
+            className={`${
+                request ? 'bg-green-700' : 'bg-red-600'
+            } rounded-md p-4 absolute top-8 left-1/2 -translate-x-1/2 border border-white flex justify-between items-center gap-4 z-50`}
         >
-            { request ? (
+            {request ? (
                 <div className="flex justify-between items-center gap-4">
                     <FaCheckCircle className="text-2xl text-green-400" />
                     <p className="text-white text-xl font-extrabold">

@@ -14,14 +14,14 @@ export async function fetchListProductsIDs(offset, pagesize) {
 
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/shopee/shop/${shopturboShopId}/products/id-list?offset=${offset}&page_size=${pagesize}&item_status=NORMAL`,
+      `${process.env.SERVER_URL}/api/shopee/shop/${shopturboShopId}/products/id-list?offset=${offset}&page_size=${pagesize}&item_status=NORMAL`,
       {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${shopturboAuthToken}`,
         },
-      }
+      },
     );
 
     if (!response.ok)

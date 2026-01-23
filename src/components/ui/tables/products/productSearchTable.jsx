@@ -1,10 +1,11 @@
 'use client';
 
-import { Column } from './column';
-import { TableData } from './tableData';
-import { CopyButton } from '../../copyButton';
-import { EditCostPriceSearchButton } from '../../editCostPriceSearchButton';
 import { useProducts } from '@/context/productContext';
+import { CopyButton } from '../../buttons/copyButton';
+import { EditCostPriceSearchButton } from '../../buttons/editCostPriceSearchButton';
+import { Column } from './column';
+import { ProductImage } from './productImage';
+import { TableData } from './tableData';
 
 export function ProductSearchTable() {
   const { productsFound } = useProducts();
@@ -36,6 +37,12 @@ export function ProductSearchTable() {
                     className="odd:bg-transparent even:bg-[--bg_5] border-t border-[--bg_4] transition"
                   >
                     <Column>
+                      <ProductImage
+                        url={product.image?.image_url_list[0]}
+                        name={product.item_name}
+                        width="48"
+                        height="48"
+                      />
                       <TableData>{product.item_name}</TableData>
                     </Column>
                     <Column>

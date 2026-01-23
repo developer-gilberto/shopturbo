@@ -1,21 +1,9 @@
-import { NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
+import { NextResponse } from 'next/server';
 
 const SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export async function middleware(request) {
-    if (['development', 'homolog'].includes(process.env.NODE_ENV)) {
-        console.info('[ Incoming Request ]: ');
-        console.info('URL: ', request.url);
-        console.info('Method: ', request.method);
-        console.info(
-            'Cookies: ',
-            Object.fromEntries(
-                request.cookies.getAll().map((c) => [c.name, c.value])
-            )
-        );
-    }
-
     const token = request.cookies.get('shopturboAuthToken')?.value;
 
     if (!token) {
@@ -31,13 +19,6 @@ export async function middleware(request) {
         const response = NextResponse.next({
             request: { headers: requestHeaders },
         });
-
-        if (['development', 'homolog'].includes(process.env.NODE_ENV)) {
-            console.info(
-                '[ Headers com Authorization ]: ',
-                Object.fromEntries(requestHeaders.entries())
-            );
-        }
 
         return response;
     } catch (err) {

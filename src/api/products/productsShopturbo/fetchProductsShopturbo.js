@@ -14,14 +14,14 @@ export async function fetchProductsShopturbo(offset, page_size) {
 
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/shop/${shopturboShopId}/products?offset=${offset}&page_size=${page_size}`,
+      `${process.env.SERVER_URL}/api/shop/${shopturboShopId}/products?offset=${offset}&page_size=${page_size}`,
       {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${shopturboAuthToken}`,
         },
-      }
+      },
     );
 
     if (!response.ok)

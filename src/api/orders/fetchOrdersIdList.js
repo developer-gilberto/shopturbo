@@ -15,14 +15,14 @@ export async function fetchOrdersIdList(status) {
   // "NÃO PAGO", "PRONTO_PARA_ENVIO", "PROCESSADO", "ENVIADO", "CONCLUÍDO", "CANCELADO", "CANCELADO", "FATURA_PENDENTE"
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/shopee/shop/${shopturboShopId}/orders/id-list?page_size=100&interval_days=15&time_range_field=create_time&order_status=${status}`,
+      `${process.env.SERVER_URL}/api/shopee/shop/${shopturboShopId}/orders/id-list?page_size=100&interval_days=15&time_range_field=create_time&order_status=${status}`,
       {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${shopturboAuthToken}`,
         },
-      }
+      },
     );
 
     if (!response.ok)

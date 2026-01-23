@@ -1,14 +1,13 @@
 'use client';
 
+import { fetchApiToken } from '@/api/shopee/fetchApiToken';
 import { FeedbackModal } from '@/components/ui/feedback-modal';
 import { IsLoading } from '@/components/ui/isLoading';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { fetchApiToken } from '../../api/shopee/fetchApiToken';
 
-export default function Callback() {
+export function CallbackGetAccessToken() {
     const router = useRouter();
-
     const [feedbackMessage, setFeedbackMessage] = useState('');
     const [successfulRequest, setSuccessfulRequest] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -20,7 +19,14 @@ export default function Callback() {
             const shop_id = searchParams.get('shop_id');
 
             if (!code || !shop_id) {
-                return setFeedbackMessage("'code' e 'shop_id' são obrigratórios.");
+                setSuccessfulRequest(false);
+                setFeedbackMessage("ERRO. 'code' e 'shop_id' não recebidos.");
+
+                setTimeout(() => {
+                    router.replace('/dashboard');
+                }, 3000);
+
+                return;
             }
 
             setSuccessfulRequest(true);
@@ -31,11 +37,15 @@ export default function Callback() {
 
                 if (response.status !== 200) {
                     setSuccessfulRequest(false);
-                    setFeedbackMessage('Ocorreu um erro ao tentar obter o token de acesso da API Shopee!');
+                    setFeedbackMessage(
+                        'Ocorreu um erro ao tentar obter o token de acesso da API Shopee!',
+                    );
 
-                    return setTimeout(() => {
+                    setTimeout(() => {
                         router.replace('/dashboard');
                     }, 3000);
+
+                    return;
                 }
 
                 setSuccessfulRequest(true);
@@ -47,7 +57,9 @@ export default function Callback() {
             fetchToken();
         } catch (err) {
             console.log('err.message: ', err.message);
-            setFeedbackMessage('Ocorreu um erro ao tentar obter o token de acesso da API Shopee.');
+            setFeedbackMessage(
+                'Ocorreu um erro ao tentar obter o token de acesso da API Shopee.',
+            );
             setTimeout(() => {
                 router.replace('/dashboard');
             }, 3000);
@@ -58,7 +70,12 @@ export default function Callback() {
 
     return (
         <div className="flex flex-col items-center justify-center">
-            {feedbackMessage && <FeedbackModal request={successfulRequest} message={feedbackMessage} />}
+            {feedbackMessage && (
+                <FeedbackModal
+                    request={successfulRequest}
+                    message={feedbackMessage}
+                />
+            )}
 
             <h1 className="mb-4">Aguarde...</h1>
 

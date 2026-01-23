@@ -3,40 +3,37 @@
 import { cookies } from 'next/headers';
 
 export async function signIn(formData) {
-    const userData = {
-        email: formData.get('email'),
-        password: formData.get('password'),
-    };
+  const userData = {
+    email: formData.get('email'),
+    password: formData.get('password'),
+  };
 
-    try {
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_SERVER_URL}/signin`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userData),
-            }
-        );
+  try {
+    const response = await fetch(`${process.env.SERVER_URL}/signin`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
+    });
 
-        if (!response.ok) return response.status;
+    if (!response.ok) return response.status;
 
-        const data = await response.json();
+    const data = await response.json();
 
-        const cookie = await cookies();
+    const cookie = await cookies();
 
-        const isProduction = process.env.NODE_ENV === 'production';
+    const isProduction = process.env.NODE_ENV === 'production';
 
-        cookie.set('shopturboAuthToken', data.token, {
-            httpOnly: isProduction,
-            secure: isProduction,
-            sameSite: isProduction ? 'none' : 'lax',
-            path: '/',
-            maxAge: 60 * 60 * 24, // 24h em segundos
-            domain: isProduction ? process.env.COOKIES_DOMAIN : 'localhost',
-        });
+    cookie.set('shopturboAuthToken', data.token, {
+      httpOnly: isProduction,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24, // 24h em segundos
+      domain: isProduction ? process.env.COOKIES_DOMAIN : 'localhost',
+    });
 
-        return 200;
-    } catch (err) {
-        return 500;
-    }
+    return 200;
+  } catch (err) {
+    return 500;
+  }
 }

@@ -14,7 +14,7 @@ export async function fetchProductsInfo(itemIdList) {
 
   try {
     const url = encodeURI(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/shopee/shop/${shopturboShopId}/products/full-info?item_id_list=${itemIdList}`
+      `${process.env.SERVER_URL}/api/shopee/shop/${shopturboShopId}/products/full-info?item_id_list=${itemIdList}`,
     );
 
     const response = await fetch(url, {

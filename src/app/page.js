@@ -1,23 +1,15 @@
-"use client";
+import { Button } from '@/components/ui/buttons/btn';
+import { Logo } from '@/components/ui/logo';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/btn";
-import { Logo } from "@/components/ui/logo";
-import { useEffect } from "react";
+export default async function Home({ searchParams }) {
+    const params = await searchParams;
 
-export default function Home() {
-    const router = useRouter();
+    const code = params?.code;
+    const shopId = params?.shop_id;
 
-    useEffect(() => {
-        const searchParams = new URLSearchParams(window.location.search);
-        const code = searchParams.get("code");
-        const shop_id = searchParams.get("shop_id");
-
-        if (code && shop_id) {
-            return router.replace(`/callback?code=${code}&shop_id=${shop_id}`);
-        }
-    }, []);
+    if (code && shopId) redirect(`/callback?code=${code}&shop_id=${shopId}`);
 
     return (
         <div className="h-dvh flex justify-center items-center">

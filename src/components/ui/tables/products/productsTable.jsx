@@ -1,31 +1,33 @@
-"use client";
+'use client';
 
-import { fetchProductsShopee } from "@/api/products/productsShopee/fetchProductsShopee";
-import { fetchProductsShopturbo } from "@/api/products/productsShopturbo/fetchProductsShopturbo";
-import { fetchShopProfile } from "@/api/shop/fetchShopProfile";
-import { useProducts } from "@/context/productContext";
-import { useProductPagination } from "@/context/productionPaginationContext";
-import { useShop } from "@/context/shopContext";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { IsLoading } from "../../isLoading";
-import { Column } from "./column";
-import { ProductImage } from "./productImage";
-import { TableData } from "./tableData";
-import { TableHeader } from "./tableHeader";
-import { CopyButton } from "../../copyButton";
-import { EditCostPriceButton } from "../../editCostPriceButton";
-import { EditGovernmentTaxesButton } from "../../editGovernmentTaxesButton";
-import { SaveChangesButton } from "../../saveChangesButton";
-import { DiscardChangesButton } from "../../discardChangesButton";
+import { fetchProductsShopee } from '@/api/products/productsShopee/fetchProductsShopee';
+import { fetchProductsShopturbo } from '@/api/products/productsShopturbo/fetchProductsShopturbo';
+import { fetchShopProfile } from '@/api/shop/fetchShopProfile';
+import { useProducts } from '@/context/productContext';
+import { useProductPagination } from '@/context/productionPaginationContext';
+import { useShop } from '@/context/shopContext';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { CopyButton } from '../../buttons/copyButton';
+import { DiscardChangesButton } from '../../buttons/discardChangesButton';
+import { DiscardChangesProductFoundButton } from '../../buttons/discardChangesInProductFoundButton';
+import { EditCostPriceButton } from '../../buttons/editCostPriceButton';
+import { EditGovernmentTaxesButton } from '../../buttons/editGovernmentTaxesButton';
+import { SaveChangesButton } from '../../buttons/saveChangesButton';
+import { IsLoading } from '../../isLoading';
+import { Column } from './column';
+import { ProductImage } from './productImage';
+import { TableData } from './tableData';
+import { TableHeader } from './tableHeader';
 
 export function ProductsTable() {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const searchParams = useSearchParams();
   const fetchedShopRef = useRef(false);
+  const searchParams = useSearchParams();
   const { shop, setShop } = useShop();
+
   const {
     hasEditedProduct,
     productsShopee,
@@ -55,49 +57,38 @@ export function ProductsTable() {
     setTotalCountShopee,
   } = useProductPagination();
 
-  function handleReturnFirstPageProducts() {
-    setHasNextPageShopturbo(true);
-    setHasNextPageShopee(true);
+  const handleReturnFirstPageProducts = () => {
     setCurrentPage(1);
-    setHasPreviousPage(false);
-
-    router.push(`/products?page=1&page_size=${pageSizeShopee}`);
-  }
-
-  async function handlePreviousPage() {
-    setHasNextPageShopturbo(true);
     setHasNextPageShopee(true);
+    setHasPreviousPage(false);
+    router.push(`/products?page=1&page_size=10`);
+  };
 
-    const page = searchParams.get("page");
-
-    if (page == 1) {
-      setCurrentPage(1);
-      setHasPreviousPage(false);
-      return;
+  const handlePreviousPage = () => {
+    const page = Number(searchParams.get('page') || 1);
+    if (page > 1) {
+      setCurrentPage(page - 1);
+      setHasNextPageShopee(true);
+      router.back();
     }
+  };
 
-    setCurrentPage((prevPage) => Number(prevPage) - 1);
-
-    router.back();
-  }
-
-  async function handleNextPage() {
+  const handleNextPage = () => {
+    const page = Number(searchParams.get('page') || 1);
     setHasPreviousPage(true);
+    setCurrentPage(page + 1);
+    router.push(`/products?page=${page + 1}&page_size=10`);
+  };
 
-    const page = searchParams.get("page");
-
-    if (page >= totalNumbersPages) {
-      setCurrentPage(totalNumbersPages);
-      setHasNextPageShopee(false);
-      return;
+  useEffect(() => {
+    if (!shop) {
+      fetchShopProfile().then((response) => {
+        if (response.status === 200) {
+          setShop(response.data);
+        }
+      });
     }
-
-    setCurrentPage((prevPage) => Number(prevPage) + 1);
-
-    router.push(
-      `/products?page=${Number(currentPage) + 1}&page_size=${pageSizeShopee}`,
-    );
-  }
+  }, []);
 
   async function fetchProducts(page) {
     setCurrentPage(page);
@@ -118,13 +109,11 @@ export function ProductsTable() {
           responseShopturbo?.data.length == 0 &&
           responseShopee?.products.length == 0
         ) {
-          alert("Nenhum produto encontrado.");
+          alert('Nenhum produto encontrado.');
 
           router.push(`/products?page=1&page_size=${pageSizeShopee}`);
           return;
         }
-
-        // tratar possiveis erros de Promise.all
 
         const shopturboProductsIDs = new Set(
           responseShopturbo.data.map((product) => product.id),
@@ -169,13 +158,13 @@ export function ProductsTable() {
         setTotalCountShopee(response.pagination.totalProducts);
 
         setInitialProductsShopturbo([]);
-        setProductsShopturbo([]); // talvez possa pegar os ultimos produtos (...prevProducts) para filtrar os productsShopee para nao aparecer os q ja foram colocados precos
+        setProductsShopturbo([]);
         setInitialProductsShopee(response.products);
         setProductsShopee(response.products);
         return;
       }
     } catch (err) {
-      console.error("Ocorreu um erro ao tentar buscar os produtos: " + err);
+      console.error('Ocorreu um erro ao tentar buscar os produtos: ' + err);
     } finally {
       setLoading(false);
     }
@@ -217,7 +206,7 @@ export function ProductsTable() {
   useEffect(() => {
     if (!shop) return;
 
-    const page = searchParams.get("page");
+    const page = searchParams.get('page');
 
     if (page == 1 || !page) {
       setCurrentPage(1);
@@ -227,32 +216,22 @@ export function ProductsTable() {
     fetchProducts(page);
   }, [shop, searchParams]);
 
+  if ((!shop && loading) || (shop && loading)) {
+    return <IsLoading />;
+  }
+
   if (!shop) {
     return (
-      <>
-        {loading ? (
-          <IsLoading />
-        ) : (
-          <p className="text-gray-400 text-center">
-            Você ainda não conectou o ShopTurbo à Shopee. Quando você autorizar
-            nosso sistema, os produtos da sua loja aparecerão aqui.
-          </p>
-        )}
-      </>
+      <p className="text-gray-400 text-center">
+        Você ainda não conectou o ShopTurbo à Shopee. Quando você autorizar
+        nosso sistema, os produtos da sua loja aparecerão aqui.
+      </p>
     );
   }
 
   if (productsShopee.length === 0 && productsShopturbo.length === 0) {
     return (
-      <>
-        {loading ? (
-          <IsLoading />
-        ) : (
-          <p className="text-gray-400 text-center">
-            Nenhum produto encontrado.
-          </p>
-        )}
-      </>
+      <p className="text-gray-400 text-center">Nenhum produto encontrado.</p>
     );
   }
 
@@ -267,8 +246,8 @@ export function ProductsTable() {
             alterações que deseja, escolha uma das opções abaixo:
           </p>
           <div className="flex justify-center items-start gap-4">
+            <DiscardChangesProductFoundButton />
             <DiscardChangesButton />
-
             <SaveChangesButton />
           </div>
         </div>
@@ -278,200 +257,175 @@ export function ProductsTable() {
         <TableHeader />
 
         <tbody>
-          {productsShopturbo &&
-            productsShopturbo.map((product) => {
-              return (
-                <tr
-                  key={`shopturbo-${String(product.id)}-${String(product.shopId)}`}
-                  className="odd:bg-transparent even:bg-[--bg_5] border-t border-[--bg_4] transition"
-                >
-                  {/* Coluna produto*/}
-                  <Column>
-                    <div className="flex justify-start items-center gap-2 min-w-full">
-                      <ProductImage
-                        url={product.imageUrl}
-                        name={product.name}
-                        width="48"
-                        height="48"
-                      />
-
-                      <div className="flex flex-col justify-center items-start">
-                        <TableData customStyle="font-bold">
-                          {product.name}
-                        </TableData>
-
-                        <TableData customStyle="font-md text-gray-400">
-                          ID categoria: {product.categoryId}
-                        </TableData>
-                      </div>
-                    </div>
-                  </Column>
-
-                  {/* Coluna ID */}
-                  <Column>
-                    <TableData>
-                      {product.id}
-                      <CopyButton text={product.id} />
+          {productsShopturbo.map((product) => (
+            <tr
+              key={`shopturbo-${String(product.id)}-${String(product.shopId)}`}
+              className="odd:bg-transparent even:bg-[--bg_5] border-t border-[--bg_4] transition"
+            >
+              <Column>
+                <div className="flex justify-start items-center gap-2 min-w-full">
+                  <ProductImage
+                    url={product.imageUrl}
+                    name={product.name}
+                    width="48"
+                    height="48"
+                  />
+                  <div className="flex flex-col justify-center items-start">
+                    <TableData customStyle="font-bold">
+                      {product.name}
                     </TableData>
-                  </Column>
-
-                  {/* Coluna SKU */}
-                  <Column>
-                    <TableData>
-                      {product.sku}
-                      <CopyButton text={product.sku} />
+                    <TableData customStyle="font-md text-gray-400">
+                      ID categoria: {product.categoryId}
                     </TableData>
-                  </Column>
+                  </div>
+                </div>
+              </Column>
 
-                  {/* Coluna Estoque */}
-                  <Column>
-                    <TableData>{product.stock}</TableData>
-                  </Column>
+              <Column>
+                <TableData>
+                  {product.id}
+                  <CopyButton text={product.id} />
+                </TableData>
+              </Column>
 
-                  {/* Coluna Preço de venda */}
-                  <Column>
-                    <TableData>
-                      {Number(product.sellingPrice).toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
+              <Column>
+                <TableData>
+                  {product.sku}
+                  <CopyButton text={product.sku} />
+                </TableData>
+              </Column>
+
+              <Column>
+                <TableData>{product.stock}</TableData>
+              </Column>
+
+              <Column>
+                <TableData>
+                  {Number(product.sellingPrice).toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                  })}
+                </TableData>
+              </Column>
+
+              <Column>
+                <TableData>
+                  {product?.costPrice
+                    ? Number(product.costPrice).toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                      })
+                    : Number(0).toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
                       })}
+                  <EditCostPriceButton
+                    editedProductId={product.id}
+                    fromShopturbo={true}
+                  />
+                </TableData>
+              </Column>
+
+              <Column>
+                <TableData>
+                  {product?.governmentTaxes ? product.governmentTaxes : 0} %
+                  <EditGovernmentTaxesButton
+                    editedProductId={product.id}
+                    fromShopturbo={true}
+                  />
+                </TableData>
+              </Column>
+            </tr>
+          ))}
+
+          {productsShopee.map((product) => (
+            <tr
+              key={`shopee-${String(product.item_id)}`}
+              className="odd:bg-transparent even:bg-[--bg_5] border-t border-[--bg_4] transition"
+            >
+              <Column>
+                <div className="flex justify-start items-center gap-2 min-w-full">
+                  <ProductImage
+                    url={product.image?.image_url_list[0]}
+                    name={product.item_name}
+                    width="48"
+                    height="48"
+                  />
+                  <div className="flex flex-col justify-center items-start">
+                    <TableData customStyle="font-bold">
+                      {product.item_name}
                     </TableData>
-                  </Column>
-
-                  {/* Coluna Preço de custo */}
-                  <Column>
-                    <TableData>
-                      {product?.costPrice
-                        ? Number(product.costPrice).toLocaleString("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                          })
-                        : Number(0).toLocaleString("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                          })}
-                      <EditCostPriceButton
-                        editedProductId={product.id}
-                        fromShopturbo={true}
-                      />
+                    <TableData customStyle="font-md text-gray-400">
+                      ID categoria: {product.category_id}
                     </TableData>
-                  </Column>
+                  </div>
+                </div>
+              </Column>
 
-                  {/* Coluna imposto % */}
-                  <Column>
-                    <TableData>
-                      {product?.governmentTaxes ? product.governmentTaxes : 0} %
-                      <EditGovernmentTaxesButton
-                        editedProductId={product.id}
-                        fromShopturbo={true}
-                      />
-                    </TableData>
-                  </Column>
-                </tr>
-              );
-            })}
-          {productsShopee &&
-            productsShopee.map((product) => {
-              return (
-                <tr
-                  key={`shopee-${String(product.item_id)}`}
-                  className="odd:bg-transparent even:bg-[--bg_5] border-t border-[--bg_4] transition"
-                >
-                  {/* Coluna produto*/}
-                  <Column>
-                    <div className="flex justify-start items-center gap-2 min-w-full">
-                      <ProductImage
-                        url={product.image?.image_url_list[0]}
-                        name={product.item_name}
-                        width="48"
-                        height="48"
-                      />
+              <Column>
+                <TableData>
+                  {product.item_id}
+                  <CopyButton text={product.item_id} />
+                </TableData>
+              </Column>
 
-                      <div className="flex flex-col justify-center items-start">
-                        <TableData customStyle="font-bold">
-                          {product.item_name}
-                        </TableData>
+              <Column>
+                <TableData>
+                  {product.item_sku}
+                  <CopyButton text={product.item_sku} />
+                </TableData>
+              </Column>
 
-                        <TableData customStyle="font-md text-gray-400">
-                          ID categoria: {product.category_id}
-                        </TableData>
-                      </div>
-                    </div>
-                  </Column>
+              <Column>
+                <TableData>
+                  {product.stock_info_v2.summary_info.total_available_stock}
+                </TableData>
+              </Column>
 
-                  {/* Coluna ID */}
-                  <Column>
-                    <TableData>
-                      {product.item_id}
-                      <CopyButton text={product.item_id} />
-                    </TableData>
-                  </Column>
+              <Column>
+                <TableData>
+                  {Number(product.price_info[0].current_price).toLocaleString(
+                    'pt-BR',
+                    {
+                      style: 'currency',
+                      currency: 'BRL',
+                    },
+                  )}
+                </TableData>
+              </Column>
 
-                  {/* Coluna SKU */}
-                  <Column>
-                    <TableData>
-                      {product.item_sku}
-                      <CopyButton text={product.item_sku} />
-                    </TableData>
-                  </Column>
+              <Column>
+                <TableData>
+                  {product?.item_cost_price ? (
+                    Number(product.item_cost_price).toLocaleString('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL',
+                    })
+                  ) : (
+                    <div className="text-gray-400">⚠️ Não informado</div>
+                  )}
+                  <EditCostPriceButton
+                    editedProductId={product.item_id}
+                    fromShopturbo={false}
+                  />
+                </TableData>
+              </Column>
 
-                  {/* Coluna Estoque */}
-                  <Column>
-                    <TableData>
-                      {product.stock_info_v2.summary_info.total_available_stock}
-                    </TableData>
-                  </Column>
-
-                  {/* Coluna Preço de venda */}
-                  <Column>
-                    <TableData>
-                      {Number(
-                        product.price_info[0].current_price,
-                      ).toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      })}
-                    </TableData>
-                  </Column>
-
-                  {/* Coluna Preço de custo */}
-                  <Column>
-                    <TableData>
-                      {product?.item_cost_price ? (
-                        Number(product.item_cost_price).toLocaleString(
-                          "pt-BR",
-                          {
-                            style: "currency",
-                            currency: "BRL",
-                          },
-                        )
-                      ) : (
-                        <div className="text-gray-400">⚠️ Não informado</div>
-                      )}
-                      <EditCostPriceButton
-                        editedProductId={product.item_id}
-                        fromShopturbo={false}
-                      />
-                    </TableData>
-                  </Column>
-
-                  {/* Coluna imposto % */}
-                  <Column>
-                    <TableData>
-                      {product?.item_government_taxes ? (
-                        product.item_government_taxes + "%"
-                      ) : (
-                        <div className="text-gray-400">⚠️ Não informado</div>
-                      )}
-                      <EditGovernmentTaxesButton
-                        editedProductId={product.item_id}
-                        fromShopturbo={false}
-                      />
-                    </TableData>
-                  </Column>
-                </tr>
-              );
-            })}
+              <Column>
+                <TableData>
+                  {product?.item_government_taxes ? (
+                    product.item_government_taxes + '%'
+                  ) : (
+                    <div className="text-gray-400">⚠️ Não informado</div>
+                  )}
+                  <EditGovernmentTaxesButton
+                    editedProductId={product.item_id}
+                    fromShopturbo={false}
+                  />
+                </TableData>
+              </Column>
+            </tr>
+          ))}
         </tbody>
       </table>
 
@@ -480,16 +434,12 @@ export function ProductsTable() {
 
         <button
           className={`flex justify-center items-center gap-1 bg-[--bg_4] py-1 px-2 rounded-md hover:bg-[--bg_3] ${
-            !hasPreviousPage ||
-            Number(offsetShopee) - Number(pageSizeShopee) == 0
-              ? "hover:cursor-not-allowed text-gray-600 hover:bg-[--bg_4]"
-              : "hover:cursor-pointer"
+            !hasPreviousPage
+              ? 'hover:cursor-not-allowed text-gray-600 hover:bg-[--bg_4]'
+              : 'hover:cursor-pointer'
           }`}
           onClick={handleReturnFirstPageProducts}
-          disabled={
-            !hasPreviousPage ||
-            Number(offsetShopee) - Number(pageSizeShopee) == 0
-          }
+          disabled={!hasPreviousPage}
         >
           Voltar para primeira página
         </button>
@@ -497,28 +447,24 @@ export function ProductsTable() {
         <div className="flex justify-center items-center gap-4">
           <button
             className={`flex justify-center items-center gap-1 bg-[--bg_4] py-1 px-2 rounded-md hover:bg-[--bg_3] ${
-              !hasPreviousPage ||
-              Number(offsetShopee) - Number(pageSizeShopee) == 0
-                ? "hover:cursor-not-allowed text-gray-600 hover:bg-[--bg_4]"
-                : "hover:cursor-pointer"
+              !hasPreviousPage
+                ? 'hover:cursor-not-allowed text-gray-600 hover:bg-[--bg_4]'
+                : 'hover:cursor-pointer'
             }`}
             onClick={handlePreviousPage}
-            disabled={
-              !hasPreviousPage ||
-              Number(offsetShopee) - Number(pageSizeShopee) == 0
-            }
+            disabled={!hasPreviousPage}
           >
             <FaArrowLeft /> Anterior
           </button>
 
           <button
             className={`flex justify-center items-center gap-1 bg-[--bg_4] py-1 px-2 rounded-md hover:bg-[--bg_3] ${
-              !hasNextPageShopturbo && !hasNextPageShopee
-                ? "hover:cursor-not-allowed text-gray-600 hover:bg-[--bg_4]"
-                : "hover:cursor-pointer"
+              !hasNextPageShopee
+                ? 'hover:cursor-not-allowed text-gray-600 hover:bg-[--bg_4]'
+                : 'hover:cursor-pointer'
             }`}
             onClick={handleNextPage}
-            disabled={!hasNextPageShopturbo && !hasNextPageShopee}
+            disabled={!hasNextPageShopee}
           >
             Próximo <FaArrowRight />
           </button>

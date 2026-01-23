@@ -1,18 +1,19 @@
 'use client';
 
-import { Button } from './btn';
-import { useState } from 'react';
-import { IsLoading } from './isLoading';
-import { useShop } from '@/context/shopContext';
-import { ProductSearchTable } from './tables/products/productSearchTable';
 import { fetchProductsInfo } from '@/api/products/productsShopee/fetchProductsInfo';
 import { useProducts } from '@/context/productContext';
+import { useShop } from '@/context/shopContext';
+import { useState } from 'react';
+import { Button } from './buttons/btn';
+import { IsLoading } from './isLoading';
+import { ProductSearchTable } from './tables/products/productSearchTable';
 
 export function ProductSearch() {
   const [loading, setLoading] = useState(false);
   const [inputProductID, setInputProductID] = useState('');
   const { shop } = useShop();
-  const { productsFound, setProductsFound } = useProducts();
+  const { productsFound, setProductsFound, setInitialProductsFound } =
+    useProducts();
 
   async function handleProductSeach(event) {
     event.preventDefault();
@@ -35,9 +36,10 @@ export function ProductSearch() {
       setInputProductID('');
 
       if (!response.data?.item_list) {
-        alert('Nenhum produto encontrado com ID informado!');
+        return alert('Nenhum produto encontrado com o ID informado!');
       }
 
+      setInitialProductsFound(response.data.item_list);
       setProductsFound(response.data.item_list);
     } catch (err) {
       console.log('Ocorreu um erro ao tentar buscar o produto informado.', err);
@@ -47,7 +49,7 @@ export function ProductSearch() {
     }
   }
 
-  if (!shop) return;
+  if (!shop) return null;
 
   return (
     <>
@@ -64,14 +66,7 @@ export function ProductSearch() {
           placeholder="Digite o ID do produto"
         />
 
-        {!loading && (
-          <Button
-            className="bg-[--bg_3] p-1 rounded-sm hover:bg-[--bg_4]"
-            type="submit"
-          >
-            Buscar produto
-          </Button>
-        )}
+        {!loading && <Button type="submit">Buscar produto</Button>}
 
         {loading && <IsLoading width="w-80" />}
       </form>

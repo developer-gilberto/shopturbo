@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from 'next/image';
 
 export function Logo({ width, height }) {
     return (
@@ -8,6 +8,7 @@ export function Logo({ width, height }) {
             width={width}
             height={height}
             quality={100}
+            priority
             className="rounded-full"
         />
     );

@@ -1,9 +1,16 @@
-# **ShopTurbo** Descomplique suas vendas na Shopee! 🚀
+# **ShopTurbo** - Descomplique suas vendas na Shopee! 🚀
 
-<img width="1913" height="961" alt="shopturbo-readme" src="https://github.com/user-attachments/assets/fc85be71-f0ed-4402-bf5d-1ab6f38f5924" />
+Sistema ERP para pessoas que possuem loja na Shopee, possam gerenciar seus produtos, vendas, saberem quanto estão tendo de custos, quanto estão tendo de lucro, entre outras funcionalidades. Desenvolvido usando JavaScript, Next.js, React e TailwindCSS.
+O ShopTurbo possui uma API REST(projeto separado) para fazer a integração do sistema com a API oficial da Shopee. Desenvolvida usando TypeScript, Node.js, Express, Prisma ORM, Postgres e Docker.
 
-Meu próprio SaaS, um sistema ERP desenvolvido usando JavaScript, Next.js, React e TailwindCSS, para pessoas que possuem loja na Shopee, para que possam gerenciar seus produtos, vendas, lucros, custos entre outras funcionalidades.
-O ShopTurbo possui uma API REST(projeto separado) desenvolvida usando Node.js, TypeScript, Express, Prisma ORM, Postgres, Docker, para fazer a integração do sistema com a API oficial da Shopee.
+## Página de pedidos da sua loja na Shopee
+<img width="1921" height="926" alt="0rders-page" src="https://github.com/user-attachments/assets/7dcc152a-7732-45ac-a976-1fc035190715" />
+
+## Você pode buscar por um produto específico pelo ID
+<img width="1921" height="926" alt="prod-busca" src="https://github.com/user-attachments/assets/a2e37261-3638-4438-a435-d1af2b7cffd1" />
+
+## Página dos seus produtos na Shopee
+<img width="1921" height="926" alt="product-page" src="https://github.com/user-attachments/assets/c497bda3-4f51-4869-977f-6e5881a20e5b" />
 
 ## ⚠️ Antes de continuar
 

@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
-import { fetchProductsShopee } from '@/api/products/productsShopee/fetchProductsShopee';
-import { fetchProductsShopturbo } from '@/api/products/productsShopturbo/fetchProductsShopturbo';
-import { fetchShopProfile } from '@/api/shop/fetchShopProfile';
-import { useProducts } from '@/context/productContext';
-import { useProductPagination } from '@/context/productionPaginationContext';
-import { useShop } from '@/context/shopContext';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
-import { CopyButton } from '../../buttons/copyButton';
-import { DiscardChangesButton } from '../../buttons/discardChangesButton';
-import { DiscardChangesProductFoundButton } from '../../buttons/discardChangesInProductFoundButton';
-import { EditCostPriceButton } from '../../buttons/editCostPriceButton';
-import { EditGovernmentTaxesButton } from '../../buttons/editGovernmentTaxesButton';
-import { SaveChangesButton } from '../../buttons/saveChangesButton';
-import { IsLoading } from '../../isLoading';
-import { Column } from './column';
-import { ProductImage } from './productImage';
-import { TableData } from './tableData';
-import { TableHeader } from './tableHeader';
+import { fetchProductsShopee } from "@/api/products/productsShopee/fetchProductsShopee";
+import { fetchProductsShopturbo } from "@/api/products/productsShopturbo/fetchProductsShopturbo";
+import { fetchShopProfile } from "@/api/shop/fetchShopProfile";
+import { useProducts } from "@/context/productContext";
+import { useProductPagination } from "@/context/productionPaginationContext";
+import { useShop } from "@/context/shopContext";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { CopyButton } from "../../buttons/copyButton";
+import { DiscardChangesButton } from "../../buttons/discardChangesButton";
+import { DiscardChangesProductFoundButton } from "../../buttons/discardChangesInProductFoundButton";
+import { EditCostPriceButton } from "../../buttons/editCostPriceButton";
+import { EditGovernmentTaxesButton } from "../../buttons/editGovernmentTaxesButton";
+import { SaveChangesButton } from "../../buttons/saveChangesButton";
+import { IsLoading } from "../../isLoading";
+import { Column } from "./column";
+import { ProductImage } from "./productImage";
+import { TableData } from "./tableData";
+import { TableHeader } from "./tableHeader";
 
 export function ProductsTable() {
   const [loading, setLoading] = useState(true);
@@ -30,6 +30,7 @@ export function ProductsTable() {
 
   const {
     hasEditedProduct,
+    productsFoundEdited,
     productsShopee,
     productsShopturbo,
     setInitialProductsShopee,
@@ -65,7 +66,7 @@ export function ProductsTable() {
   };
 
   const handlePreviousPage = () => {
-    const page = Number(searchParams.get('page') || 1);
+    const page = Number(searchParams.get("page") || 1);
     if (page > 1) {
       setCurrentPage(page - 1);
       setHasNextPageShopee(true);
@@ -74,7 +75,7 @@ export function ProductsTable() {
   };
 
   const handleNextPage = () => {
-    const page = Number(searchParams.get('page') || 1);
+    const page = Number(searchParams.get("page") || 1);
     setHasPreviousPage(true);
     setCurrentPage(page + 1);
     router.push(`/products?page=${page + 1}&page_size=10`);
@@ -109,7 +110,7 @@ export function ProductsTable() {
           responseShopturbo?.data.length == 0 &&
           responseShopee?.products.length == 0
         ) {
-          alert('Nenhum produto encontrado.');
+          alert("Nenhum produto encontrado.");
 
           router.push(`/products?page=1&page_size=${pageSizeShopee}`);
           return;
@@ -164,7 +165,7 @@ export function ProductsTable() {
         return;
       }
     } catch (err) {
-      console.error('Ocorreu um erro ao tentar buscar os produtos: ' + err);
+      console.error("Ocorreu um erro ao tentar buscar os produtos: " + err);
     } finally {
       setLoading(false);
     }
@@ -206,7 +207,7 @@ export function ProductsTable() {
   useEffect(() => {
     if (!shop) return;
 
-    const page = searchParams.get('page');
+    const page = searchParams.get("page");
 
     if (page == 1 || !page) {
       setCurrentPage(1);
@@ -246,8 +247,8 @@ export function ProductsTable() {
             alterações que deseja, escolha uma das opções abaixo:
           </p>
           <div className="flex justify-center items-start gap-4">
-            <DiscardChangesProductFoundButton />
-            <DiscardChangesButton />
+            {productsFoundEdited && <DiscardChangesProductFoundButton />}
+            {!productsFoundEdited && <DiscardChangesButton />}
             <SaveChangesButton />
           </div>
         </div>
@@ -301,9 +302,9 @@ export function ProductsTable() {
 
               <Column>
                 <TableData>
-                  {Number(product.sellingPrice).toLocaleString('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
+                  {Number(product.sellingPrice).toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
                   })}
                 </TableData>
               </Column>
@@ -311,13 +312,13 @@ export function ProductsTable() {
               <Column>
                 <TableData>
                   {product?.costPrice
-                    ? Number(product.costPrice).toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
+                    ? Number(product.costPrice).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
                       })
-                    : Number(0).toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
+                    : Number(0).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
                       })}
                   <EditCostPriceButton
                     editedProductId={product.id}
@@ -385,10 +386,10 @@ export function ProductsTable() {
               <Column>
                 <TableData>
                   {Number(product.price_info[0].current_price).toLocaleString(
-                    'pt-BR',
+                    "pt-BR",
                     {
-                      style: 'currency',
-                      currency: 'BRL',
+                      style: "currency",
+                      currency: "BRL",
                     },
                   )}
                 </TableData>
@@ -397,9 +398,9 @@ export function ProductsTable() {
               <Column>
                 <TableData>
                   {product?.item_cost_price ? (
-                    Number(product.item_cost_price).toLocaleString('pt-BR', {
-                      style: 'currency',
-                      currency: 'BRL',
+                    Number(product.item_cost_price).toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
                     })
                   ) : (
                     <div className="text-gray-400">⚠️ Não informado</div>
@@ -414,7 +415,7 @@ export function ProductsTable() {
               <Column>
                 <TableData>
                   {product?.item_government_taxes ? (
-                    product.item_government_taxes + '%'
+                    product.item_government_taxes + "%"
                   ) : (
                     <div className="text-gray-400">⚠️ Não informado</div>
                   )}
@@ -435,8 +436,8 @@ export function ProductsTable() {
         <button
           className={`flex justify-center items-center gap-1 bg-[--bg_4] py-1 px-2 rounded-md hover:bg-[--bg_3] ${
             !hasPreviousPage
-              ? 'hover:cursor-not-allowed text-gray-600 hover:bg-[--bg_4]'
-              : 'hover:cursor-pointer'
+              ? "hover:cursor-not-allowed text-gray-600 hover:bg-[--bg_4]"
+              : "hover:cursor-pointer"
           }`}
           onClick={handleReturnFirstPageProducts}
           disabled={!hasPreviousPage}
@@ -448,8 +449,8 @@ export function ProductsTable() {
           <button
             className={`flex justify-center items-center gap-1 bg-[--bg_4] py-1 px-2 rounded-md hover:bg-[--bg_3] ${
               !hasPreviousPage
-                ? 'hover:cursor-not-allowed text-gray-600 hover:bg-[--bg_4]'
-                : 'hover:cursor-pointer'
+                ? "hover:cursor-not-allowed text-gray-600 hover:bg-[--bg_4]"
+                : "hover:cursor-pointer"
             }`}
             onClick={handlePreviousPage}
             disabled={!hasPreviousPage}
@@ -460,8 +461,8 @@ export function ProductsTable() {
           <button
             className={`flex justify-center items-center gap-1 bg-[--bg_4] py-1 px-2 rounded-md hover:bg-[--bg_3] ${
               !hasNextPageShopee
-                ? 'hover:cursor-not-allowed text-gray-600 hover:bg-[--bg_4]'
-                : 'hover:cursor-pointer'
+                ? "hover:cursor-not-allowed text-gray-600 hover:bg-[--bg_4]"
+                : "hover:cursor-pointer"
             }`}
             onClick={handleNextPage}
             disabled={!hasNextPageShopee}

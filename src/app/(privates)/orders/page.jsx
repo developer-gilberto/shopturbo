@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import { fetchOrdersDetails } from '@/api/orders/fetchOrdersDetails';
-import { fetchOrdersIdList } from '@/api/orders/fetchOrdersIdList';
-import { fetchProductsShopturbo } from '@/api/products/productsShopturbo/fetchProductsShopturbo';
-import { fetchShopProfile } from '@/api/shop/fetchShopProfile';
-import { Main } from '@/components/layout/main';
-import { Nav } from '@/components/layout/nav';
-import { Button } from '@/components/ui/buttons/btn';
-import { CopyButton } from '@/components/ui/buttons/copyButton';
-import { IsLoading } from '@/components/ui/isLoading';
-import { useOrder } from '@/context/orderContext';
-import { useProducts } from '@/context/productContext';
-import { useShop } from '@/context/shopContext';
-import { useEffect, useRef, useState } from 'react';
+import { fetchOrdersDetails } from "@/api/orders/fetchOrdersDetails";
+import { fetchOrdersIdList } from "@/api/orders/fetchOrdersIdList";
+import { fetchProductsShopturbo } from "@/api/products/productsShopturbo/fetchProductsShopturbo";
+import { fetchShopProfile } from "@/api/shop/fetchShopProfile";
+import { Main } from "@/components/layout/main";
+import { Nav } from "@/components/layout/nav";
+import { Button } from "@/components/ui/buttons/btn";
+import { CopyButton } from "@/components/ui/buttons/copyButton";
+import { IsLoading } from "@/components/ui/isLoading";
+import { useOrder } from "@/context/orderContext";
+import { useProducts } from "@/context/productContext";
+import { useShop } from "@/context/shopContext";
+import { useEffect, useRef, useState } from "react";
 
 export default function Orders() {
   const [loading, setLoading] = useState(false);
-  const [inputOrderStatus, setInputOrderStatus] = useState('');
+  const [inputOrderStatus, setInputOrderStatus] = useState("");
   const [governmentTaxes, setGovernmentTaxes] = useState(10);
   const [totalGovernmentTaxes, setTotalGovernmentTaxes] = useState(0);
   const [totalShopeeCommission, setTotalShopeeCommission] = useState(0);
@@ -62,7 +62,7 @@ export default function Orders() {
   }, []);
 
   async function fetchOrders() {
-    const orderStatus = inputOrderStatus;
+    const orderStatus = inputOrderStatus ? inputOrderStatus : "READY_TO_SHIP";
 
     try {
       setLoading(true);
@@ -70,9 +70,7 @@ export default function Orders() {
       // "UNPAID", "READY_TO_SHIP", "PROCESSED", "SHIPPED", "COMPLETED", "IN_CANCEL", "CANCELLED", "INVOICE_PENDING"
       // "NÃO PAGO", "PRONTO_PARA_ENVIO", "PROCESSADO", "ENVIADO", "CONCLUÍDO", "CANCELADO", "CANCELADO", "FATURA_PENDENTE"
 
-      const response = await fetchOrdersIdList(
-        !inputOrderStatus ? 'READY_TO_SHIP' : orderStatus,
-      );
+      const response = await fetchOrdersIdList(orderStatus);
 
       setNumberOfOrdersFound(response.data?.order_list.length);
 
@@ -91,7 +89,7 @@ export default function Orders() {
       ]);
 
       if (ordersData.status !== 200) {
-        setInputOrderStatus('');
+        setInputOrderStatus("");
         return setOrders([]);
       }
       if (products.status !== 200) return;
@@ -184,7 +182,7 @@ export default function Orders() {
       setTotalCostPrice(totalCostPriceWithTaxesAndCommission);
       setTotalProfit(totalProfit);
     } catch (err) {
-      console.error('[ ERROR ]: ', err);
+      console.error("[ ERROR ]: ", err);
     } finally {
       setLoading(false);
     }
@@ -240,7 +238,7 @@ export default function Orders() {
                 <div className="text-xl font-bold my-4">
                   <p>
                     {!numberOfOrdersFound &&
-                      'Nenhum pedido encontrado para essa busca'}
+                      "Nenhum pedido encontrado para essa busca"}
                   </p>
                 </div>
               </div>
@@ -277,19 +275,19 @@ export default function Orders() {
                   order.item_list.map((item, index) => {
                     function getOrderStatus(status) {
                       const statusMap = {
-                        UNPAID: 'Aguardando pagamento',
-                        READY_TO_SHIP: 'Pronto para envio',
-                        PROCESSED: 'Processado',
-                        SHIPPED: 'Enviado',
-                        COMPLETED: 'Concluído',
-                        IN_CANCEL: 'Em cancelamento',
-                        CANCELLED: 'Cancelado',
-                        INVOICE_PENDING: 'Fatura pendente',
+                        UNPAID: "Aguardando pagamento",
+                        READY_TO_SHIP: "Pronto para envio",
+                        PROCESSED: "Processado",
+                        SHIPPED: "Enviado",
+                        COMPLETED: "Concluído",
+                        IN_CANCEL: "Em cancelamento",
+                        CANCELLED: "Cancelado",
+                        INVOICE_PENDING: "Fatura pendente",
                         TO_CONFIRM_RECEIVE:
-                          'Aguardando cliente confirmar recebimento',
+                          "Aguardando cliente confirmar recebimento",
                       };
 
-                      return statusMap[status] ?? 'Status desconhecido';
+                      return statusMap[status] ?? "Status desconhecido";
                     }
 
                     const currentOrderProduct = productsShopturbo.find(
@@ -388,9 +386,9 @@ export default function Orders() {
 
                         {/* Preço de venda */}
                         <td className="border border-[--bg_3] p-2">
-                          {sellingPrice.toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
+                          {sellingPrice.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
                           })}
                         </td>
 
@@ -401,64 +399,64 @@ export default function Orders() {
 
                         {/* Valor total pedido */}
                         <td className="border border-[--bg_3] p-2 text-blue-400">
-                          {orderItemQuantityValue.toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
+                          {orderItemQuantityValue.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
                           })}
                         </td>
 
                         {/* Preço de custo */}
                         <td className="border border-[--bg_3] p-2 text-yellow-300">
                           {currentOrderProduct?.costPrice
-                            ? inputCostPrice.toLocaleString('pt-BR', {
-                                style: 'currency',
-                                currency: 'BRL',
+                            ? inputCostPrice.toLocaleString("pt-BR", {
+                                style: "currency",
+                                currency: "BRL",
                               })
-                            : '⚠️ Não informado'}
+                            : "⚠️ Não informado"}
                         </td>
 
                         {/* Imposto */}
                         <td className="border border-[--bg_3] p-2">
                           {governmentTaxes}%
                           <div className="p-2 text-yellow-300">
-                            {totalGovernmentTaxes.toLocaleString('pt-BR', {
-                              style: 'currency',
-                              currency: 'BRL',
+                            {totalGovernmentTaxes.toLocaleString("pt-BR", {
+                              style: "currency",
+                              currency: "BRL",
                             })}
                           </div>
                         </td>
 
                         {/* Comissão Shopee */}
                         <td className="border border-[--bg_3] p-2 text-yellow-300">
-                          {shopeeCommission.toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
+                          {shopeeCommission.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
                           })}
                         </td>
 
                         {/* Frete */}
                         <td className="border border-[--bg_3] p-2">
-                          {shipping.toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
+                          {shipping.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
                           })}
                         </td>
 
                         {/* Total de custos */}
                         <td className="border border-[--bg_3] p-2 text-orange-400">
-                          {totalCost.toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
+                          {totalCost.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
                           })}
                         </td>
 
                         {/* Lucro */}
                         <td
-                          className={`border border-[--bg_3] p-2 font-bold ${profit >= 0 ? 'text-green-500' : 'text-red-600'}`}
+                          className={`border border-[--bg_3] p-2 font-bold ${profit >= 0 ? "text-green-500" : "text-red-600"}`}
                         >
-                          {profit.toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
+                          {profit.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
                           })}
                         </td>
                       </tr>
@@ -506,9 +504,9 @@ export default function Orders() {
                           );
                           return acc1 + totalOrder;
                         }, 0),
-                      ).toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
+                      ).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
                       })}
                     </th>
 
@@ -517,17 +515,17 @@ export default function Orders() {
 
                     {/* Total impostos */}
                     <th className="py-4 px-2 border border-[--bg_3] text-yellow-300">
-                      {Number(totalGovernmentTaxes).toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
+                      {Number(totalGovernmentTaxes).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
                       })}
                     </th>
 
                     {/* Total comissao shopee */}
                     <th className="py-4 px-2 border border-[--bg_3] text-yellow-300">
-                      {Number(totalShopeeCommission).toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
+                      {Number(totalShopeeCommission).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
                       })}
                     </th>
 
@@ -536,17 +534,17 @@ export default function Orders() {
 
                     {/* Total custos pedidos */}
                     <th className="py-4 px-2 border border-[--bg_3] text-orange-400">
-                      {Number(totalCostPrice).toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
+                      {Number(totalCostPrice).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
                       })}
                     </th>
 
                     {/* Total lucros */}
                     <th className="py-4 px-2 border border-[--bg_3] text-green-400 font-extrabold">
-                      {Number(totalProfit).toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
+                      {Number(totalProfit).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
                       })}
                     </th>
                   </tr>

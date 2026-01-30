@@ -1,12 +1,12 @@
-'use server';
+"use server";
 
-import { cookies } from 'next/headers';
+import { cookies } from "next/headers";
 
 export async function fetchShopProfile() {
   const cookie = await cookies();
 
-  const shopturboAuthToken = cookie.get('shopturboAuthToken')?.value;
-  const shopturboShopId = cookie.get('shopturboShopId')?.value;
+  const shopturboAuthToken = cookie.get("shopturboAuthToken")?.value;
+  const shopturboShopId = cookie.get("shopturboShopId")?.value;
 
   if (!shopturboAuthToken || !shopturboShopId) {
     return { status: 401, data: null };
@@ -17,9 +17,9 @@ export async function fetchShopProfile() {
       fetch(
         `${process.env.SERVER_URL}/api/shopee/shop/info/${shopturboShopId}`,
         {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${shopturboAuthToken}`,
           },
         },
@@ -28,20 +28,20 @@ export async function fetchShopProfile() {
       fetch(
         `${process.env.SERVER_URL}/api/shopee/shop/profile/${shopturboShopId}`,
         {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${shopturboAuthToken}`,
           },
         },
       ),
     ]);
 
-    if (!shopInfo.ok || !shopProfile.ok)
+    if (!shopInfo.ok && !shopProfile.ok)
       return {
-        status: response.status,
+        status: `statusShopInfo: ${shopInfo.status}, statusShopProfile: ${shopProfile.status}`,
         message:
-          'There was a problem trying to search for the shop profile in fetchShopProfile()',
+          "There was a problem trying to search for the shop profile in fetchShopProfile()",
         data: null,
       };
 
@@ -58,7 +58,7 @@ export async function fetchShopProfile() {
     return {
       status: 500,
       message:
-        'There was a problem trying to search for the shop profile in fetchShopProfile().',
+        "There was a problem trying to search for the shop profile in fetchShopProfile().",
       data: err,
     };
   }

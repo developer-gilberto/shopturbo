@@ -9,6 +9,7 @@ import { Nav } from "@/components/layout/nav";
 import { Button } from "@/components/ui/buttons/btn";
 import { CopyButton } from "@/components/ui/buttons/copyButton";
 import { IsLoading } from "@/components/ui/isLoading";
+import { ProductImage } from "@/components/ui/tables/products/productImage";
 import { useOrder } from "@/context/orderContext";
 import { useProducts } from "@/context/productContext";
 import { useShop } from "@/context/shopContext";
@@ -340,16 +341,13 @@ export default function Orders() {
                       >
                         {/* Pedido */}
                         <td className="border border-[--bg_3] p-2">
-                          <div>
-                            {/* <img
-                                    className="w-8 h-8 object-cover rounded"
-                                    src={
-                                        item.image_url
-                                    }
-                                    alt={
-                                        item.item_name
-                                    }
-                                /> */}
+                          <div className="flex justify-start items-center gap-4">
+                            <ProductImage
+                              url={item.image_url}
+                              name={item.item_name}
+                              width="48"
+                              height="48"
+                            />
                             <div className="flex flex-col justify-between items-start gap-1 text-gray-100 uppercase">
                               <span className="font-medium">
                                 {item.item_name}
@@ -541,7 +539,9 @@ export default function Orders() {
                     </th>
 
                     {/* Total lucros */}
-                    <th className="py-4 px-2 border border-[--bg_3] text-green-400 font-extrabold">
+                    <th
+                      className={`py-4 px-2 border border-[--bg_3] font-extrabold ${totalProfit >= 0 ? "text-green-500" : "text-red-600"}`}
+                    >
                       {Number(totalProfit).toLocaleString("pt-BR", {
                         style: "currency",
                         currency: "BRL",
